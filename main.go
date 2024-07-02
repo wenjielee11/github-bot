@@ -1,8 +1,12 @@
 package main
 
 import (
+	"strconv"
 	"context"
 	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -16,11 +20,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const (
-	appID          = 934870                            // Replace with your App ID
-	installationID = 52398709                          // Replace with your Installation ID
-	privateKeyPath = "./issuetracker.private-key.pem"  // Path to your private key
-)
 
 type PullRequest struct {
 	Number       int      `json:"number"`
@@ -41,25 +40,38 @@ type EventPayload struct {
 	Issue       *Issue       `json:"issue"`
 }
 
+
+
+
 func main() {
-	// Load the private key
-	privateKey, err := ioutil.ReadFile(privateKeyPath)
+	appID := os.Getenv("APP_ID")
+	installationIDStr := os.Getenv("INSTALLATION_ID")
+	privateKeyBase64 := os.Getenv("PRIVATE_KEY")
+
+	privateKeyDecoded, err := base64.StdEncoding.DecodeString(privateKeyBase64)
 	if err != nil {
-		log.Fatalf("Error reading private key: %v", err)
+		log.Fatalf("Error decoding private key: %v", err)
 	}
 
-	// Parse the private key
-	parsedKey, err := jwt.ParseRSAPrivateKeyFromPEM(privateKey)
+	block, _ := pem.Decode(privateKeyDecoded)
+	if block == nil || block.Type != "RSA PRIVATE KEY" {
+		log.Fatalf("Failed to decode PEM block containing private key")
+	}
+
+	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	if err != nil {
 		log.Fatalf("Error parsing private key: %v", err)
 	}
 
 	// Generate a JWT
-	jwtToken, err := generateJWT(appID, parsedKey)
+	jwtToken, err := generateJWT(appID, privateKey)
 	if err != nil {
 		log.Fatalf("Error generating JWT: %v", err)
 	}
-
+	installationID, err := strconv.ParseInt(installationIDStr, 10, 64)
+	if err != nil {
+		log.Fatalf("Error converting INSTALLATION_ID to int64: %v", err)
+	}
 	// Get the installation token
 	installationToken, err := getInstallationToken(installationID, jwtToken)
 	if err != nil {
@@ -217,7 +229,7 @@ func commentOnIssue(ctx context.Context, client *github.Client, owner, repo stri
 	}
 }
 
-func generateJWT(appID int64, key *rsa.PrivateKey) (string, error) {
+func generateJWT(appID string, key *rsa.PrivateKey) (string, error) {
 	now := time.Now()
 	claims := jwt.StandardClaims{
 		IssuedAt:  now.Unix(),
