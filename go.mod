@@ -1,6 +1,6 @@
 module github.com/wenjielee11/github-issue-triage-bot
 
-go 1.21.3
+go 1.21
 
 require (
 	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0 // indirect
