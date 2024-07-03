@@ -25,6 +25,9 @@ jobs:
         go build -o github_bot cmd/main.go
         ./github_bot
       env:
+        APP_ID: ${{ secrets.APP_ID }}
+        INSTALLATION_ID: ${{secrets.INSTALLATION_ID}}
+        PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
         GITHUB_EVENT_PATH: ${{ github.event_path }}
