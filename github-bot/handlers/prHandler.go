@@ -1,12 +1,14 @@
 package handlers
+
 import (
 	"context"
-	"github-bot/models"
-	"github-bot/services"
 	"log"
-	"github.com/google/go-github/v41/github"
-)
 
+	"github.com/wenjielee1/github-bot/services"
+
+	"github.com/google/go-github/v41/github"
+	"github.com/wenjielee1/github-bot/models"
+)
 
 func HandlePullRequestEvent(ctx context.Context, client *github.Client, owner, repo string, eventPayload models.EventPayload) {
 	if eventPayload.PullRequest == nil {

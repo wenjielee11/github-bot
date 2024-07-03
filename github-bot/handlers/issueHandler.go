@@ -2,14 +2,16 @@ package handlers
 
 import (
 	"context"
-	"github-bot/models"
-	"github-bot/utils"
-	"github-bot/services"
 	"log"
 	"strings"
 
+	"github.com/wenjielee1/github-bot/services"
+
+	"github.com/wenjielee1/github-bot/utils"
+
+	"github.com/wenjielee1/github-bot/models"
+
 	"github.com/google/go-github/v41/github"
-	
 )
 
 func HandleIssueEvent(ctx context.Context, client *github.Client, owner, repo string, eventPayload models.EventPayload) {

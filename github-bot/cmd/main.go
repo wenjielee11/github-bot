@@ -1,12 +1,15 @@
 package main
 
 import (
-	"github-bot/handlers"
-	"github-bot/services"
-	"github-bot/utils"
 	"log"
 	"os"
 	"strconv"
+
+	"github.com/wenjielee1/github-bot/services"
+
+	"github.com/wenjielee1/github-bot/utils"
+
+	"github.com/wenjielee1/github-bot/handlers"
 )
 
 const (

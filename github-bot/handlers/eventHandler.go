@@ -3,8 +3,9 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"github-bot/models"
-	
+
+	"github.com/wenjielee1/github-bot/models"
+
 	"io/ioutil"
 	"log"
 	"os"

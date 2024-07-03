@@ -1,4 +1,4 @@
-module github-bot
+module github.com/wenjielee1/github-bot
 
 go 1.21
 

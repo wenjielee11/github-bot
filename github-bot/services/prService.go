@@ -2,14 +2,15 @@ package services
 
 import (
 	"context"
-	"github-bot/models"
-	"github-bot/utils"
 	"log"
 	"strings"
 
+	"github.com/wenjielee1/github-bot/utils"
+
+	"github.com/wenjielee1/github-bot/models"
+
 	"github.com/google/go-github/v41/github"
 )
-
 
 func CheckChangelogUpdated(ctx context.Context, client *github.Client, owner, repo string, pr *models.PullRequest) {
 	files, _, err := client.PullRequests.ListFiles(ctx, owner, repo, pr.Number, nil)
