@@ -21,6 +21,7 @@ jobs:
 
     - name: Build and run Go script
       run: |
+        cd github-bot
         go mod tidy
         go build -o github_bot github-bot/cmd/main.go
         ./github_bot
