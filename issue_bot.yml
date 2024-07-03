@@ -1,0 +1,29 @@
+name: Issue Bot
+
+on:
+  issues:
+    types: [opened, edited, closed]
+  pull_request:
+    types: [opened, synchronize, closed]
+
+jobs:
+  issue-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.18'
+
+    - name: Build and run Go script
+      run: |
+        go build -o issue_bot issue_bot.go
+        ./issue_bot
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_EVENT_PATH: ${{ github.event_path }}
