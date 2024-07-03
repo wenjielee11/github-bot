@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 
 	"github.com/wenjielee1/github-bot/models"
-
 	"io/ioutil"
 	"log"
 	"os"
