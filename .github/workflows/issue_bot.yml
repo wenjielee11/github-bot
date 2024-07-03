@@ -21,7 +21,7 @@ jobs:
 
     - name: Build and run Go script
       run: |
-        go build -o issue_bot issue_bot.go
+        go build -o github_bot github-bot/cmd/main.go
         ./issue_bot
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

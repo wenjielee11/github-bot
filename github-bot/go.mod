@@ -1,7 +1,6 @@
-module github.com/wenjielee11/github-issue-triage-bot
+module github-bot
 
 go 1.21
-
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
