@@ -214,22 +214,11 @@ func AddRow(client *http.Client, tableType models.TableType, tableId string, mes
         log.Printf("Error generating text during interaction: %v", err)
         return nil, fmt.Errorf("error marshaling data: %w", err)
     }
-    defer resp.Body.Close()
-	var result []byte
-
-	// Wait for the stream to complete before closing. If got error, look here.
-	buffer := make([]byte, 1024)
-	for {
-		n, err := resp.Body.Read(buffer)
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return nil, fmt.Errorf("error reading response body: %w", err)
-		}
-		result = append(result, buffer[:n]...) // Store the chunk in the buffer
+    responseData, err := readStreamedResponse(resp)
+	if err != nil {
+		return nil, fmt.Errorf("error reading streamed response: %w", err)
 	}
-	return result, nil;
+	return responseData, nil;
 }
 
 // NOTE: THESE COMMENTED FUNCTIONS ARE NOT TESTED, ITS JUST A ROUGH IMPLEMENTATION!
@@ -281,3 +270,41 @@ func AddRow(client *http.Client, tableType models.TableType, tableId string, mes
 
 //     log.Println("Conversation table deleted successfully.")
 // }
+
+func readStreamedResponse(resp *http.Response) ([]byte, error) {
+	defer resp.Body.Close()
+
+	var assembledContent bytes.Buffer
+	buffer := make([]byte, 1024)
+
+	for {
+		n, err := resp.Body.Read(buffer)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, fmt.Errorf("error reading response body: %w", err)
+		}
+		assembledContent.Write(buffer[:n])
+	}
+
+	return assembledContent.Bytes(), nil
+}
+
+func ParseResponse(data []byte, responseType string) (interface{}, error) {
+	var genericResponse map[string]interface{}
+	if err := json.Unmarshal(data, &genericResponse); err != nil {
+		return nil, fmt.Errorf("error unmarshaling generic response: %w", err)
+	}
+
+	// Determine the type based on some identifier or structure
+	if responseType == "Issue"{
+		var CreateIssueResponse models.CreateIssueResponse
+		if err := json.Unmarshal(data, &CreateIssueResponse); err != nil {
+			return nil, fmt.Errorf("error unmarshaling responseTypeA: %w", err)
+		}
+		return CreateIssueResponse, nil;
+	} 
+
+	return nil, fmt.Errorf("unknown response type")
+}

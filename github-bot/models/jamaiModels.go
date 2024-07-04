@@ -81,3 +81,31 @@ type CreateIssueResponse struct {
 	Priority string   `json:"priority"`
 	Response string   `json:"response"`
 }
+
+type Choice struct {
+	Message struct {
+		Role    string `json:"role"`
+		Content string `json:"content"`
+		Name    *string `json:"name,omitempty"`
+	} `json:"message"`
+	Index        int         `json:"index"`
+	FinishReason interface{} `json:"finish_reason"`
+}
+
+type Usage struct {
+	PromptTokens     int `json:"prompt_tokens"`
+	CompletionTokens int `json:"completion_tokens"`
+	TotalTokens      int `json:"total_tokens"`
+}
+
+type StreamResponse struct{
+	ID               string   `json:"id"`
+	Object           string   `json:"object"`
+	Created          int64    `json:"created"`
+	Model            string   `json:"model"`
+	Usage            Usage    `json:"usage"`
+	Choices          []Choice `json:"choices"`
+	References       *string  `json:"references,omitempty"`
+	OutputColumnName string   `json:"output_column_name"`
+	RowID            string   `json:"row_id"`
+}
