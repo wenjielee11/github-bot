@@ -17,21 +17,19 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	message := map[string]string{
 		"IssueBody": issue.Title + "\n" + issue.Body,
 	}
-	result, err := AddRow(jamaiClient, models.ActionTable, tableId, message)
+	resp, err := AddRow(jamaiClient, models.ActionTable, tableId, message)
 	if err != nil {
 		log.Printf("Error processing issue %d %s:\n%v", issue.Number, issue.Title, err)
 	}
 
-	resp, err := ParseResponse(result, "issue")
+	result, err := parseCreateIssueResponse(resp)
 	if err != nil {
 		log.Printf("Error parsing response: %v", err)
 	}
-	response, ok := resp.(models.CreateIssueResponse)
-	if ok {
-		labels := append(response.Labels, "priority: "+response.Priority)
-		utils.CreatePriorityLabels(ctx, client, owner, repo)
-		utils.AddLabels(ctx, client, owner, repo, issue.Number, labels)
-		utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, response.Response)
-	}
+
+	labels := append(result.Labels, "priority: "+result.Priority)
+	utils.CreatePriorityLabels(ctx, client, owner, repo)
+	utils.AddLabels(ctx, client, owner, repo, issue.Number, labels)
+	utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, result.Response)
 
 }
