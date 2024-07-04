@@ -62,7 +62,7 @@ func sendRequest(client *http.Client, method, url string, data interface{}) (*ht
     req.Header.Set("Accept", "application/json")
     req.Header.Set("Content-Type", "application/json")
 
-    log.Printf("Sending Request:\nMethod: %s\nURL: %s\nHeaders: %v\nBody: %s\n", method, url, req.Header, string(body))
+    // log.Printf("Sending Request:\nMethod: %s\nURL: %s\nHeaders: %v\nBody: %s\n", method, url, req.Header, string(body))
     
     resp, err := client.Do(req)
     if err != nil {
@@ -295,6 +295,7 @@ func readStreamedResponse(resp *http.Response) ([]byte, error) {
 }
 
 func ParseResponse(data []byte, responseType string) (interface{}, error) {
+    log.Printf("Raw response data: %s", string(data))
 	var genericResponse map[string]interface{}
 	if err := json.Unmarshal(data, &genericResponse); err != nil {
 		return nil, fmt.Errorf("error unmarshaling generic response: %w", err)
