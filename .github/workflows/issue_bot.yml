@@ -28,6 +28,8 @@ jobs:
         APP_ID: ${{ secrets.APP_ID }}
         INSTALLATION_ID: ${{secrets.INSTALLATION_ID}}
         PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
+        JAMAI_KEY: ${{secrets.JAMAI_KEY}}
+        JAMAI_PROJECT_ID: ${{secrets.JAMAI_PROJECT_ID}}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
         GITHUB_EVENT_PATH: ${{ github.event_path }}
