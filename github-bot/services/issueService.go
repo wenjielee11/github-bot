@@ -19,12 +19,12 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	}
 	resp, err := AddRow(jamaiClient, models.ActionTable, tableId, message)
 	if err != nil {
-		log.Printf("Error processing issue %d %s:\n%v", issue.Number, issue.Title, err)
+		log.Fatalf("Error processing issue %d %s:\n%v", issue.Number, issue.Title, err)
 	}
 
 	result, err := parseCreateIssueResponse(resp)
 	if err != nil {
-		log.Printf("Error parsing response: %v", err)
+		log.Fatalf("Error parsing create issue response: %v", err)
 	}
 
 	labels := append(result.Labels, "priority: "+result.Priority)
