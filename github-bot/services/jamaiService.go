@@ -62,6 +62,8 @@ func sendRequest(client *http.Client, method, url string, data interface{}) (*ht
     req.Header.Set("Accept", "application/json")
     req.Header.Set("Content-Type", "application/json")
 
+    log.Printf("Sending Request:\nMethod: %s\nURL: %s\nHeaders: %v\nBody: %s\n", method, url, req.Header, string(body))
+    
     resp, err := client.Do(req)
     if err != nil {
         return nil, fmt.Errorf("error sending request: %w", err)
