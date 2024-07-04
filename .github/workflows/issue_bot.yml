@@ -1,4 +1,4 @@
-name: Issue Bot
+name: Github Bot
 
 on:
   issues:
@@ -7,7 +7,7 @@ on:
     types: [opened, synchronize, closed]
 
 jobs:
-  issue-bot:
+  github-bot:
     runs-on: ubuntu-latest
 
     steps:
