@@ -1,9 +1,12 @@
 package services
 
 import (
-    "context"
-    "github.com/google/go-github/v41/github"
-    "golang.org/x/oauth2"
+	"context"
+	"os"
+    "log"
+	"github.com/google/go-github/v41/github"
+	"github.com/wenjielee1/github-bot/models"
+	"golang.org/x/oauth2"
 )
 
 func GetInstallationToken(installationID int64, jwtToken string) (string, error) {
@@ -19,4 +22,20 @@ func GetInstallationToken(installationID int64, jwtToken string) (string, error)
         return "", err
     }
     return token.GetToken(), nil
+}
+
+func GetJamAiHeader() *models.JamaiAuth{
+    jamaiKey := os.Getenv("JAMAI_KEY")
+	if jamaiKey == "" {
+		log.Fatalf("Error: JAMAI_KEY environment variable not set")
+	}
+    projectId :=os.Getenv("JAMAI_PROJECT_ID")
+    if projectId == "" {
+		log.Fatalf("Error: JAMAI_PROJECT_ID environment variable not set")
+	}
+	return &models.JamaiAuth{
+		Authorization: "Bearer " + jamaiKey,
+		XProjectID: projectId,
+	}  
+  
 }

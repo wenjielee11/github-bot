@@ -19,11 +19,13 @@ func HandleIssueEvent(ctx context.Context, client *github.Client, owner, repo st
 		log.Println("No issue data found in payload")
 		return
 	}
-
+	
 	issue := eventPayload.Issue
+
 	log.Printf("Processing issue: %s", issue.Title)
 
 	if strings.Contains(strings.ToLower(issue.Title), "bug") {
+		
 		utils.AddLabel(ctx, client, owner, repo, issue.Number, "bug")
 		utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, "OwO, It seems that we did a wittle fucky wucky. Sowwy!")
 	} else if strings.Contains(strings.ToLower(issue.Title), "feature") {
