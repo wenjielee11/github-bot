@@ -39,7 +39,7 @@ func (t *AuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
     return t.Transport.RoundTrip(reqClone)
 }
 
-func newClient(authInfo *models.JamaiAuth) *http.Client {
+func NewJamaiClient(authInfo *models.JamaiAuth) *http.Client {
     return &http.Client{
         Transport: &AuthTransport{
             Transport: http.DefaultTransport,
@@ -75,7 +75,7 @@ func sendRequest(client *http.Client, method, url string, data interface{}) (*ht
 
 }
 
-func createKnowledgeTable(client *http.Client, tableId string){
+func CreateKnowledgeTable(client *http.Client, tableId string){
 	url := fmt.Sprintf("%s/knowledge", BASE_URL)
     data := models.CreateAgentKnowledgeTableRequest{
         ID:             tableId,
@@ -98,9 +98,9 @@ func createKnowledgeTable(client *http.Client, tableId string){
 }
 
 
-func createTable(client *http.Client, tableType models.TableType, tableId string, agents []models.Agent) {
+func CreateTable(client *http.Client, tableType models.TableType, tableId string, agents []models.Agent) {
 	if(tableType == models.KnowledgeTable){
-		createKnowledgeTable(client, tableId)
+		CreateKnowledgeTable(client, tableId)
 		return;
 	}
 
@@ -201,7 +201,7 @@ func createTable(client *http.Client, tableType models.TableType, tableId string
 //     }
 // }
 
-func addRow(client *http.Client, tableType models.TableType, tableId string, messages map[string]string) ([]byte, error) {
+func AddRow(client *http.Client, tableType models.TableType, tableId string, messages map[string]string) ([]byte, error) {
     url := fmt.Sprintf("%s/%s/rows/add", BASE_URL, tableType)
     data := models.AddRowRequest{
         TableID: tableId,

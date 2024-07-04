@@ -17,12 +17,12 @@ type RagParams struct {
 }
 
 type GenConfig struct {
-	EmbeddingModel string `json:embedding_model,omitempty`
-	Model       string     `json:"model"`
-	Messages    []Message  `json:"messages"`
-	Temperature float64    `json:"temperature"`
-	MaxTokens   int        `json:"max_tokens"`
-	TopP        float64    `json:"top_p"`
+	EmbeddingModel string  `json:"embedding_model,omitempty"`
+	Model          string     `json:"model"`
+	Messages       []Message  `json:"messages"`
+	Temperature    float64    `json:"temperature"`
+	MaxTokens      int        `json:"max_tokens"`
+	TopP          float64    `json:"top_p"`
 	RagParams   RagParams  `json:"rag_params,omitempty"`
 }
 
@@ -74,4 +74,10 @@ type AddRowRequest struct {
 type JamaiAuth struct {
 	Authorization string
 	XProjectID    string
+}
+
+type CreateIssueResponse struct {
+	Labels   []string `json:"labels"`
+	Priority string   `json:"priority"`
+	Response string   `json:"response"`
 }
