@@ -21,7 +21,7 @@ var GEN_CONFIG = models.GenConfig{
     Temperature: 1,
     MaxTokens:   1000,
     TopP:        0.1,
-    RagParams: models.RagParams{
+    RagParams: &models.RagParams{
         K:              5,
         RerankingModel: "ellm/BAAI/bge-reranker-v2-m3",
     },
@@ -121,6 +121,7 @@ func CreateTable(client *http.Client, tableType models.TableType, tableId string
 				Temperature: GEN_CONFIG.Temperature,
 				MaxTokens:   GEN_CONFIG.MaxTokens,
 				TopP:        GEN_CONFIG.TopP,
+                RagParams: nil,
 			}
 		}
 		cols = append(cols, col)

@@ -23,7 +23,7 @@ type GenConfig struct {
 	Temperature    float64    `json:"temperature"`
 	MaxTokens      int        `json:"max_tokens"`
 	TopP          float64    `json:"top_p"`
-	RagParams   RagParams  `json:"rag_params,omitempty"`
+	RagParams   *RagParams  `json:"rag_params,omitempty"`
 }
 
 type Message struct {
