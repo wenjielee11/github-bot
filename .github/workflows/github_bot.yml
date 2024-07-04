@@ -2,7 +2,7 @@ name: JamAction Bot
 
 on:
   issues:
-    types: [opened, edited, closed]
+    types: [opened, edited]
   pull_request:
     types: [opened, synchronize, closed]
 

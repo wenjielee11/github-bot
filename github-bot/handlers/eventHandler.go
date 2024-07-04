@@ -39,6 +39,7 @@ func HandleGitHubEvents(owner, repo, token string) {
 
 	switch eventName {
 	case "issues":
+		
 		HandleIssueEvent(ctx, client, owner, repo, eventPayload)
 	case "pull_request":
 		HandlePullRequestEvent(ctx, client, owner, repo, eventPayload)
