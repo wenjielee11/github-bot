@@ -13,16 +13,16 @@ import (
 )
 
 const (
-	owner      = "wenjielee1"
-	repository = "chatbot-test"
+	owner      = "EmbeddedLLM"
+	repository = "JAM.ai.dev"
 )
 
 func main() {
 	log.Println("Starting the GitHub bot")
 
-	appIDStr := os.Getenv("APP_ID")
-	installationIDStr := os.Getenv("INSTALLATION_ID")
-	privateKeyBase64 := os.Getenv("PRIVATE_KEY")
+	appIDStr := os.Getenv("GITHUB_BOT_APP_ID")
+	installationIDStr := os.Getenv("GITHUB_BOT_INSTALLATION_ID")
+	privateKeyBase64 := os.Getenv("GITHUB_BOT_PRIVATE_KEY")
 
 	log.Printf("APP_ID: %s", appIDStr)
 	log.Printf("INSTALLATION_ID: %s", installationIDStr)

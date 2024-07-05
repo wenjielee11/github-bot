@@ -25,11 +25,11 @@ func GetInstallationToken(installationID int64, jwtToken string) (string, error)
 }
 
 func GetJamAiHeader() *models.JamaiAuth{
-    jamaiKey := os.Getenv("JAMAI_KEY")
+    jamaiKey := os.Getenv("GITHUB_BOT_JAMAI_KEY")
 	if jamaiKey == "" {
 		log.Fatalf("Error: JAMAI_KEY environment variable not set")
 	}
-    projectId :=os.Getenv("JAMAI_PROJECT_ID")
+    projectId :=os.Getenv("GITHUB_BOT_JAMAI_PROJECT_ID")
     if projectId == "" {
 		log.Fatalf("Error: JAMAI_PROJECT_ID environment variable not set")
 	}
