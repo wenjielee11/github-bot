@@ -25,11 +25,11 @@ jobs:
         go build -o github_bot cmd/main.go
         ./github_bot
       env:
-        GITHUB_BOT_APP_ID: ${{ secrets.GITHUB_BOT_APP_ID }}
-        GITHUB_BOT_INSTALLATION_ID: ${{secrets.GITHUB_BOT_INSTALLATION_ID}}
-        GITHUB_BOT_PRIVATE_KEY: ${{secrets.GITHUB_BOT_PRIVATE_KEY}}
-        GITHUB_BOT_JAMAI_KEY: ${{secrets.GITHUB_BOT_JAMAI_KEY}}
-        GITHUB_BOT_JAMAI_PROJECT_ID: ${{secrets.GITHUB_BOT_JAMAI_PROJECT_ID}}
+        TRIAGE_BOT_APP_ID: ${{ secrets.TRIAGE_BOT_APP_ID }}
+        TRIAGE_BOT_INSTALLATION_ID: ${{secrets.TRIAGE_BOT_INSTALLATION_ID}}
+        TRIAGE_BOT_PRIVATE_KEY: ${{secrets.TRIAGE_BOT_PRIVATE_KEY}}
+        TRIAGE_BOT_JAMAI_KEY: ${{secrets.TRIAGE_BOT_JAMAI_KEY}}
+        TRIAGE_BOT_JAMAI_PROJECT_ID: ${{secrets.TRIAGE_BOT_JAMAI_PROJECT_ID}}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
         GITHUB_EVENT_PATH: ${{ github.event_path }}
