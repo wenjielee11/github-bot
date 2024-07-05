@@ -1,4 +1,4 @@
-name: JamAction Bot
+name: JamJam
 
 on:
   issues:
@@ -21,7 +21,7 @@ jobs:
 
     - name: Build and run Go script
       run: |
-        cd github-bot
+        cd github-bot/src
         go build -o github_bot cmd/main.go
         ./github_bot
       env:
