@@ -207,8 +207,8 @@ func CreateTable(client *http.Client, tableType models.TableType, tableId string
 //     }
 // }
 
-// Function to read the streamed response and collect content when output_column_name is "IssueResponse"
-func readAndCollectContent(resp *http.Response) (string, error) {
+// Function to read the streamed response and collect content when output_column_name is "outputColumn"
+func readAndCollectContent(resp *http.Response, outputColumn string) (string, error) {
 	defer resp.Body.Close()
 
 	var collectedContent strings.Builder
@@ -227,7 +227,7 @@ func readAndCollectContent(resp *http.Response) (string, error) {
 				return "", fmt.Errorf("error unmarshaling line: %w", err)
 			}
 
-			if outputColumnName, ok := chunk["output_column_name"].(string); ok && outputColumnName == "IssueResponse" {
+			if outputColumnName, ok := chunk["output_column_name"].(string); ok && outputColumnName == outputColumn {
 				if choices, ok := chunk["choices"].([]interface{}); ok {
 					for _, choice := range choices {
 						if choiceMap, ok := choice.(map[string]interface{}); ok {
@@ -260,7 +260,7 @@ func parseCreateIssueResponse(content string) (models.CreateIssueResponse, error
 }
 
 
-func AddRow(client *http.Client, tableType models.TableType, tableId string, messages map[string]string) (string, error) {
+func AddRow(client *http.Client, tableType models.TableType, tableId string, messages map[string]string) (*http.Response, error) {
     url := fmt.Sprintf("%s/%s/rows/add", BASE_URL, tableType)
     data := models.AddRowRequest{
         TableID: tableId,
@@ -271,13 +271,10 @@ func AddRow(client *http.Client, tableType models.TableType, tableId string, mes
     resp, err := sendRequest(client, "POST", url, data)
     if err != nil {
         log.Printf("Error generating text during interaction: %v", err)
-        return "", fmt.Errorf("error marshaling data: %w", err)
+        return nil, fmt.Errorf("error marshaling data: %w", err)
     }
-    responseData, err := readAndCollectContent(resp)
-	if err != nil {
-		return "", fmt.Errorf("error reading streamed response: %w", err)
-	}
-	return responseData, nil;
+
+	return resp, nil;
 }
 
 // NOTE: THESE COMMENTED FUNCTIONS ARE NOT TESTED, ITS JUST A ROUGH IMPLEMENTATION!

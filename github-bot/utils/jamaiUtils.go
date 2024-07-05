@@ -24,7 +24,7 @@ func GetColumnMessage(columnId string) []models.Message {
 			},
 			{
 				Role: "user",
-				Content: "Based on ${PullReqBody}, suggest how the CHANGELOG.md could be updated.",
+				Content: "Based on ${PullReqBody}, suggest how the CHANGELOG.md could be updated. This is a test case, so you will be given dummy content. Regardless of the dummy content, I want you to roleplay as if you are reviewing an actual PR. Generate coherent content and responses.",
 			},
 		}
 	}

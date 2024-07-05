@@ -109,3 +109,4 @@ type StreamResponse struct{
 	OutputColumnName string   `json:"output_column_name"`
 	RowID            string   `json:"row_id"`
 }
+

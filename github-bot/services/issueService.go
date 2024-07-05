@@ -21,8 +21,11 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	if err != nil {
 		log.Fatalf("Error processing issue %d %s:\n%v", issue.Number, issue.Title, err)
 	}
-
-	result, err := parseCreateIssueResponse(resp)
+	respString, err := readAndCollectContent(resp, "IssueResponse")
+	if err != nil {
+		log.Fatalf("Error processing issue %d %s:\n%v", issue.Number, issue.Title, err)
+	}
+	result, err := parseCreateIssueResponse(respString)
 	if err != nil {
 		log.Fatalf("Error parsing create issue response: %v", err)
 	}

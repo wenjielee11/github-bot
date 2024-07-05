@@ -14,17 +14,17 @@ import (
 func DecodePrivateKey(privateKeyBase64 string) (*rsa.PrivateKey, error) {
     privateKeyDecoded, err := base64.StdEncoding.DecodeString(privateKeyBase64)
     if err != nil {
-        return nil, fmt.Errorf("Error decoding private key: %v", err)
+        return nil, fmt.Errorf("error decoding private key: %v", err)
     }
 
     block, _ := pem.Decode(privateKeyDecoded)
     if block == nil || block.Type != "RSA PRIVATE KEY" {
-        return nil, fmt.Errorf("Failed to decode PEM block containing private key")
+        return nil, fmt.Errorf("failed to decode PEM block containing private key")
     }
 
     privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
     if err != nil {
-        return nil, fmt.Errorf("Error parsing private key: %v", err)
+        return nil, fmt.Errorf("error parsing private key: %v", err)
     }
 
     return privateKey, nil

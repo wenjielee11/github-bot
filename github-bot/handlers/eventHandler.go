@@ -8,7 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
+	"github.com/wenjielee1/github-bot/services"
+	"github.com/wenjielee1/github-bot/utils"
 	"github.com/google/go-github/v41/github"
 	"golang.org/x/oauth2"
 )
@@ -36,13 +37,25 @@ func HandleGitHubEvents(owner, repo, token string) {
 	if err := json.Unmarshal(eventData, &eventPayload); err != nil {
 		log.Fatalf("Error parsing event data: %v", err)
 	}
+	jamaiClient := services.NewJamaiClient(services.GetJamAiHeader())
+	actionTableId := owner+"_"+repo 
+	issueResponseMessage := utils.GetColumnMessage("IssueResponse")
+	prResponseMessage := utils.GetColumnMessage("PullReqResponse")
+	agents:= []models.Agent{
+		{ColumnID: "IssueBody", Messages: nil},
+		{ColumnID: "PullReqBody", Messages: nil},
+		{ColumnID: "IssueResponse", Messages: issueResponseMessage},
+		{ColumnID: "PullReqResponse", Messages: prResponseMessage},
+	}
+
+	services.CreateTable(jamaiClient, models.ActionTable, actionTableId, agents)
 
 	switch eventName {
 	case "issues":
 		
-		HandleIssueEvent(ctx, client, owner, repo, eventPayload)
+		HandleIssueEvent(ctx, client, jamaiClient, owner, repo, eventPayload)
 	case "pull_request":
-		HandlePullRequestEvent(ctx, client, owner, repo, eventPayload)
+		HandlePullRequestEvent(ctx, client, jamaiClient, owner, repo, eventPayload)
 	default:
 		log.Printf("Unhandled event: %s", eventName)
 	}
