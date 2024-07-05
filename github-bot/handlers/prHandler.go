@@ -21,6 +21,6 @@ func HandlePullRequestEvent(ctx context.Context, client *github.Client, jamaiCli
 
 	
 	services.CheckChangelogUpdated(ctx, client, jamaiClient, owner, repo, pr)
-	services.CheckSecretKeyLeakage(ctx, client, owner, repo, pr)
-	services.SuggestLabelsForPR(ctx, client, owner, repo, pr)
+	services.CheckSecretKeyLeakage(ctx, client, jamaiClient, owner, repo, pr)
+// 	services.SuggestLabelsForPR(ctx, client, owner, repo, pr)
 }

@@ -15,6 +15,7 @@ import (
 )
 
 func HandleIssueEvent(ctx context.Context, client *github.Client, jamaiClient *http.Client, owner, repo string, eventPayload models.EventPayload) {
+	
 	if eventPayload.Issue == nil {
 		log.Println("No issue data found in payload")
 		return

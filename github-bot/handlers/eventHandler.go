@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/google/go-github/v41/github"
 	"github.com/wenjielee1/github-bot/models"
+	"github.com/wenjielee1/github-bot/services"
+	"github.com/wenjielee1/github-bot/utils"
+	"golang.org/x/oauth2"
 	"io/ioutil"
 	"log"
 	"os"
-	"github.com/wenjielee1/github-bot/services"
-	"github.com/wenjielee1/github-bot/utils"
-	"github.com/google/go-github/v41/github"
-	"golang.org/x/oauth2"
 )
 
 func HandleGitHubEvents(owner, repo, token string) {
@@ -37,22 +37,25 @@ func HandleGitHubEvents(owner, repo, token string) {
 	if err := json.Unmarshal(eventData, &eventPayload); err != nil {
 		log.Fatalf("Error parsing event data: %v", err)
 	}
+
 	jamaiClient := services.NewJamaiClient(services.GetJamAiHeader())
-	actionTableId := owner+"_"+repo 
+	actionTableId := owner + "_" + repo
 	issueResponseMessage := utils.GetColumnMessage("IssueResponse")
 	prResponseMessage := utils.GetColumnMessage("PullReqResponse")
-	agents:= []models.Agent{
+	prSecretsMessage := utils.GetColumnMessage("PullReqSecretsResponse")
+	agents := []models.Agent{
 		{ColumnID: "IssueBody", Messages: nil},
 		{ColumnID: "PullReqBody", Messages: nil},
+		{ColumnID: "PullReqSecretsBody", Messages: nil},
 		{ColumnID: "IssueResponse", Messages: issueResponseMessage},
 		{ColumnID: "PullReqResponse", Messages: prResponseMessage},
+		{ColumnID: "PullReqSecretsResponse", Messages: prSecretsMessage},
 	}
 
 	services.CreateTable(jamaiClient, models.ActionTable, actionTableId, agents)
 
 	switch eventName {
 	case "issues":
-		
 		HandleIssueEvent(ctx, client, jamaiClient, owner, repo, eventPayload)
 	case "pull_request":
 		HandlePullRequestEvent(ctx, client, jamaiClient, owner, repo, eventPayload)

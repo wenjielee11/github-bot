@@ -36,3 +36,4 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, result.Response)
 
 }
+

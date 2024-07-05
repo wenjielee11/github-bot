@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	
+
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,93 +20,92 @@ const MODEL_NAME = "ellm/Qwen/Qwen2-72B-Instruct"
 // Shared configuration struct
 var GEN_CONFIG = models.GenConfig{
 	EmbeddingModel: "ellm/BAAI/bge-m3",
-    Model:       MODEL_NAME,
-    Temperature: 1,
-    MaxTokens:   1000,
-    TopP:        0.1,
-    RagParams: &models.RagParams{
-        K:              5,
-        RerankingModel: "ellm/BAAI/bge-reranker-v2-m3",
-    },
+	Model:          MODEL_NAME,
+	Temperature:    1,
+	MaxTokens:      1000,
+	TopP:           0.1,
+	RagParams: &models.RagParams{
+		K:              5,
+		RerankingModel: "ellm/BAAI/bge-reranker-v2-m3",
+	},
 }
 
 type AuthTransport struct {
-    Transport http.RoundTripper
-    AuthInfo  *models.JamaiAuth
+	Transport http.RoundTripper
+	AuthInfo  *models.JamaiAuth
 }
 
 func (t *AuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-    reqClone := req.Clone(req.Context())
-    reqClone.Header.Set("Authorization", t.AuthInfo.Authorization)
-    reqClone.Header.Set("X-PROJECT-ID", t.AuthInfo.XProjectID)
-    return t.Transport.RoundTrip(reqClone)
+	reqClone := req.Clone(req.Context())
+	reqClone.Header.Set("Authorization", t.AuthInfo.Authorization)
+	reqClone.Header.Set("X-PROJECT-ID", t.AuthInfo.XProjectID)
+	return t.Transport.RoundTrip(reqClone)
 }
 
 func NewJamaiClient(authInfo *models.JamaiAuth) *http.Client {
-    return &http.Client{
-        Transport: &AuthTransport{
-            Transport: http.DefaultTransport,
-            AuthInfo:  authInfo,
-        },
-    }
+	return &http.Client{
+		Transport: &AuthTransport{
+			Transport: http.DefaultTransport,
+			AuthInfo:  authInfo,
+		},
+	}
 }
 
 func sendRequest(client *http.Client, method, url string, data interface{}) (*http.Response, error) {
-    body, err := json.Marshal(data)
-    if err != nil {
-        return nil, fmt.Errorf("error marshalling data: %w", err)
-    }
+	body, err := json.Marshal(data)
+	if err != nil {
+		return nil, fmt.Errorf("error marshalling data: %w", err)
+	}
 
-    req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
-    if err != nil {
-        return nil, fmt.Errorf("error creating request: %w", err)
-    }
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
+	if err != nil {
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
 
-    req.Header.Set("Accept", "application/json")
-    req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
-    // log.Printf("Sending Request:\nMethod: %s\nURL: %s\nHeaders: %v\nBody: %s\n", method, url, req.Header, string(body))
-    
-    resp, err := client.Do(req)
-    if err != nil {
-        return nil, fmt.Errorf("error sending request: %w", err)
-    }
-    if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusConflict {
-        bodyBytes, _ := ioutil.ReadAll(resp.Body)
-        return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(bodyBytes))
-    }
-	
-    return resp, nil
+	// log.Printf("Sending Request:\nMethod: %s\nURL: %s\nHeaders: %v\nBody: %s\n", method, url, req.Header, string(body))
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error sending request: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusConflict {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status code: %d, response: %s", resp.StatusCode, string(bodyBytes))
+	}
+
+	return resp, nil
 
 }
 
-func CreateKnowledgeTable(client *http.Client, tableId string){
+func CreateKnowledgeTable(client *http.Client, tableId string) {
 	url := fmt.Sprintf("%s/knowledge", BASE_URL)
-    data := models.CreateAgentKnowledgeTableRequest{
-        ID:             tableId,
-		Cols:			[]models.Col{},
-        EmbeddingModel: GEN_CONFIG.EmbeddingModel,
-    }
+	data := models.CreateAgentKnowledgeTableRequest{
+		ID:             tableId,
+		Cols:           []models.Col{},
+		EmbeddingModel: GEN_CONFIG.EmbeddingModel,
+	}
 
-    resp, err := sendRequest(client, "POST", url, data)
-    if err != nil {
-        log.Printf("Error creating knowledge table: %v", err)
-        return
-    }
-    defer resp.Body.Close()
+	resp, err := sendRequest(client, "POST", url, data)
+	if err != nil {
+		log.Printf("Error creating knowledge table: %v", err)
+		return
+	}
+	defer resp.Body.Close()
 
-    if resp.StatusCode == http.StatusConflict {
-        log.Println("Knowledge table already exists.")
-    } else {
-        log.Println("Knowledge table created successfully.")
-    }
+	if resp.StatusCode == http.StatusConflict {
+		log.Println("Knowledge table already exists.")
+	} else {
+		log.Println("Knowledge table created successfully.")
+	}
 }
-
 
 func CreateTable(client *http.Client, tableType models.TableType, tableId string, agents []models.Agent) {
-	if(tableType == models.KnowledgeTable){
+	if tableType == models.KnowledgeTable {
 		CreateKnowledgeTable(client, tableId)
-		return;
+		return
 	}
 
 	url := fmt.Sprintf("%s/%s", BASE_URL, tableType)
@@ -124,7 +123,7 @@ func CreateTable(client *http.Client, tableType models.TableType, tableId string
 				Temperature: GEN_CONFIG.Temperature,
 				MaxTokens:   GEN_CONFIG.MaxTokens,
 				TopP:        GEN_CONFIG.TopP,
-                RagParams: nil,
+				RagParams:   nil,
 			}
 		}
 		cols = append(cols, col)
@@ -135,18 +134,18 @@ func CreateTable(client *http.Client, tableType models.TableType, tableId string
 		Cols: cols,
 	}
 
-    resp, err := sendRequest(client, "POST", url, data)
-    if err != nil {
-        log.Printf("Error creating chat table: %v", err)
-        return
-    }
-    defer resp.Body.Close()
+	resp, err := sendRequest(client, "POST", url, data)
+	if err != nil {
+		log.Printf("Error creating chat table: %v", err)
+		return
+	}
+	defer resp.Body.Close()
 
-    if resp.StatusCode == http.StatusConflict {
-        log.Println(tableType+" already exists.")
-    } else {
-        log.Println(tableType+" created successfully.")
-    }
+	if resp.StatusCode == http.StatusConflict {
+		log.Println(tableType + " already exists.")
+	} else {
+		log.Println(tableType + " created successfully.")
+	}
 }
 
 // NOTE: THESE COMMENTED FUNCTIONS ARE NOT TESTED, ITS JUST A ROUGH IMPLEMENTATION!
@@ -259,22 +258,22 @@ func parseCreateIssueResponse(content string) (models.CreateIssueResponse, error
 	return issueResponse, nil
 }
 
-
 func AddRow(client *http.Client, tableType models.TableType, tableId string, messages map[string]string) (*http.Response, error) {
-    url := fmt.Sprintf("%s/%s/rows/add", BASE_URL, tableType)
-    data := models.AddRowRequest{
-        TableID: tableId,
-        Data:    []map[string]string{messages},
-        Stream:  true,
-    }
+	url := fmt.Sprintf("%s/%s/rows/add", BASE_URL, tableType)
+	data := models.AddRowRequest{
+		TableID: tableId,
+		Data:    []map[string]string{messages},
+		Stream:  true,
+	}
 
-    resp, err := sendRequest(client, "POST", url, data)
-    if err != nil {
-        log.Printf("Error generating text during interaction: %v", err)
-        return nil, fmt.Errorf("error marshaling data: %w", err)
-    }
+	resp, err := sendRequest(client, "POST", url, data)
 
-	return resp, nil;
+	if err != nil {
+		log.Printf("Error generating text during interaction: %v", err)
+		return nil, fmt.Errorf("error marshaling data: %w", err)
+	}
+
+	return resp, nil
 }
 
 // NOTE: THESE COMMENTED FUNCTIONS ARE NOT TESTED, ITS JUST A ROUGH IMPLEMENTATION!
@@ -326,5 +325,3 @@ func AddRow(client *http.Client, tableType models.TableType, tableId string, mes
 
 //     log.Println("Conversation table deleted successfully.")
 // }
-
-

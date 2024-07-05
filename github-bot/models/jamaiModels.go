@@ -1,6 +1,5 @@
 package models
 
-
 type TableType string
 
 // Define constants for the enum values
@@ -17,13 +16,13 @@ type RagParams struct {
 }
 
 type GenConfig struct {
-	EmbeddingModel string  `json:"embedding_model,omitempty"`
+	EmbeddingModel string     `json:"embedding_model,omitempty"`
 	Model          string     `json:"model"`
 	Messages       []Message  `json:"messages"`
 	Temperature    float64    `json:"temperature"`
 	MaxTokens      int        `json:"max_tokens"`
-	TopP          float64    `json:"top_p"`
-	RagParams   *RagParams  `json:"rag_params,omitempty"`
+	TopP           float64    `json:"top_p"`
+	RagParams      *RagParams `json:"rag_params,omitempty"`
 }
 
 type Message struct {
@@ -32,9 +31,9 @@ type Message struct {
 }
 
 type Col struct {
-	ID        string    `json:"id"`
-	Dtype     string    `json:"dtype"`
-	Vlen      int       `json:"vlen,omitempty"`
+	ID        string     `json:"id"`
+	Dtype     string     `json:"dtype"`
+	Vlen      int        `json:"vlen,omitempty"`
 	GenConfig *GenConfig `json:"gen_config,omitempty"`
 }
 
@@ -44,13 +43,13 @@ type CreateAgentChatTableRequest struct {
 }
 
 type ConfigureAgentChatTableRequest struct {
-	TableID   string              `json:"table_id"`
+	TableID   string               `json:"table_id"`
 	ColumnMap map[string]GenConfig `json:"column_map"`
 }
 
-type Agent struct{
+type Agent struct {
 	ColumnID string
-	Messages []Message 
+	Messages []Message
 }
 
 type CreateAgentConversationTableRequest struct {
@@ -66,9 +65,9 @@ type CreateAgentKnowledgeTableRequest struct {
 }
 
 type AddRowRequest struct {
-	TableID string            `json:"table_id"`
+	TableID string              `json:"table_id"`
 	Data    []map[string]string `json:"data"`
-	Stream  bool              `json:"stream"`
+	Stream  bool                `json:"stream"`
 }
 
 type JamaiAuth struct {
@@ -84,8 +83,8 @@ type CreateIssueResponse struct {
 
 type Choice struct {
 	Message struct {
-		Role    string `json:"role"`
-		Content string `json:"content"`
+		Role    string  `json:"role"`
+		Content string  `json:"content"`
 		Name    *string `json:"name,omitempty"`
 	} `json:"message"`
 	Index        int         `json:"index"`
@@ -98,7 +97,7 @@ type Usage struct {
 	TotalTokens      int `json:"total_tokens"`
 }
 
-type StreamResponse struct{
+type StreamResponse struct {
 	ID               string   `json:"id"`
 	Object           string   `json:"object"`
 	Created          int64    `json:"created"`
@@ -110,3 +109,8 @@ type StreamResponse struct{
 	RowID            string   `json:"row_id"`
 }
 
+type CreatePullReqSecretResponse struct {
+	Leak   bool   `json:"leak"`
+	Commit   string `json:"commit"`
+	Response string `json:"response"`
+}
