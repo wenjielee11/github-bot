@@ -63,7 +63,7 @@ func getCommitDiff(ctx context.Context, client *github.Client, owner, repo, sha 
 	var diff strings.Builder
 	for _, file := range commit.Files {
 		if file.GetPatch() != "" {
-			diff.WriteString(fmt.Sprintf("File: %s\nPatch:\n%s\n\n", file.GetFilename(), file.GetPatch()))
+			diff.WriteString(fmt.Sprintf("File: %s\n%s\n", file.GetFilename(), file.GetPatch()))
 		}
 	}
 
@@ -88,7 +88,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 			continue
 		}
 		changes.WriteString(fmt.Sprintf("Commit: %s\n", commit.GetSHA()))
-		changes.WriteString(fmt.Sprintf("Diff: %s\n\n", diff))
+		changes.WriteString(fmt.Sprintf("Diff:\n %s", diff))
 		prompt := changes.String()
 
 		message := map[string]string{
