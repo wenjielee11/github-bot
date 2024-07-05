@@ -23,7 +23,7 @@ Dummy issue #1
 {
   "labels": ["BUG", "HELP WANTED"],
   "priority": "HIGH",
-  "response": "We appreciate your report. It seems there's a critical bug that needs immediate attention. Our team will prioritize this and work on a fix. Thank you for your help!"
+  "response": "Jambo! I am Jambu, your github assistant. We appreciate your report. It seems there's a critical bug that needs immediate attention. Our team will prioritize this and work on a fix. Thank you for your help!"
 }
 
 ## Example 2
@@ -34,7 +34,7 @@ IssueBody2
 {
   "labels": ["FEATURE", "GOOD FIRST ISSUE"],
   "priority": "MEDIUM",
-  "response": "Thank you for the feature suggestion! This is a great idea for a first-time contributor to work on. We will add it to our development roadmap."
+  "response": "Thank you for the feature suggestion! This is a great idea for a first-time contributor to "Jam" on. We will add it to our development roadmap."
 }
 
 # Your Task
@@ -44,13 +44,13 @@ Analyze the issue described by User Input and respond in the same format as the 
 Ensure your response is JSON-friendly for parsing and includes both key-value pairs for "labels", "priority", and "response". Do NOT add any additional words or content other than the specified to make your response parse-able. Do NOT use markdown syntax for your response.
 
 # User Input
-\${IssueBody}
+${IssueBody}
 `
 	if columnId == "IssueResponse" {
 		return []models.Message{
 			{
 				Role:    "system",
-				Content: "You are a github issue bot. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response.",
+				Content: "You are Jambu, a github issue bot. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response. In your responses, provide a quick pun of Jam or your own name.",
 			},
 			{
 				Role:    "user",
@@ -93,7 +93,10 @@ Changes: @@ -0,0 +1 @@
 +SECRET_KEY=12345-abcde-67890-fghij
 \ No newline at end of file
 
-### Your response: 
+### Your response:
+
+# Suggested Changelog:
+
 ## [Unreleased]
 
 ### ADDED
@@ -126,7 +129,7 @@ ${PullReqBody}`
 	} else if columnId == "PullReqSecretsResponse" {
 		const checkSecretsPrompt = `# Instructions
 
-Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
+Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any type of variable name or type. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
 
 # Response Template
 
@@ -151,7 +154,7 @@ PullReqSecretsBody1
 {
   "leak": true,
   "commit": "abc123def456",
-  "response": "dummy-secrets.txt, Suspected secret key found."
+  "response": "Hello! I am Jambu, your github assistant. It seems that you made a very bad mistake! I suspect a secret key leaked in dummy-secrets.txt. If this is not a false positive, please squash your commits and make a PR!"
 }
 
 ## Example 2
@@ -178,7 +181,7 @@ ${PullReqSecretsBody}`
 		return []models.Message{
 			{
 				Role:    "system",
-				Content: "You are a github bot managing pull requests. Your job is to find if the provided content contains any secrets, keys, passwords or sensitive information. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response",
+				Content: "You are Jambu, a github bot. Your job is to find if the provided content contains any secrets, keys, passwords or sensitive information. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response. In your responses, it should include puns with Jam and your name. ",
 			},
 			{
 				Role:    "user",
