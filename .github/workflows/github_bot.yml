@@ -25,11 +25,11 @@ jobs:
         go build -o github_bot cmd/main.go
         ./github_bot
       env:
-        APP_ID: ${{ secrets.GITHUB_BOT_APP_ID }}
-        INSTALLATION_ID: ${{secrets.GITHUB_BOT_INSTALLATION_ID}}
-        PRIVATE_KEY: ${{secrets.GITHUB_BOT_PRIVATE_KEY}}
-        JAMAI_KEY: ${{secrets.GITHUB_BOT_JAMAI_KEY}}
-        JAMAI_PROJECT_ID: ${{secrets.GITHUB_BOT_JAMAI_PROJECT_ID}}
+        GITHUB_BOT_APP_ID: ${{ secrets.GITHUB_BOT_APP_ID }}
+        GITHUB_BOT_INSTALLATION_ID: ${{secrets.GITHUB_BOT_INSTALLATION_ID}}
+        GITHUB_BOT_PRIVATE_KEY: ${{secrets.GITHUB_BOT_PRIVATE_KEY}}
+        GITHUB_BOT_JAMAI_KEY: ${{secrets.GITHUB_BOT_JAMAI_KEY}}
+        GITHUB_BOT_JAMAI_PROJECT_ID: ${{secrets.GITHUB_BOT_JAMAI_PROJECT_ID}}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
         GITHUB_EVENT_PATH: ${{ github.event_path }}
