@@ -39,7 +39,7 @@ IssueBody2
 
 # Your Task
 
-Analyze the issue described by User Input and respond in the same format as the examples above.
+Analyze the issue described by User Input and respond in the same format as the examples above. Your responses and suggestions should be helpful, and fitting of an assistant software engineer.
 
 Ensure your response is JSON-friendly for parsing and includes both key-value pairs for "labels", "priority", and "response". Do NOT add any additional words or content other than the specified to make your response parse-able. Do NOT use markdown syntax for your response.
 
