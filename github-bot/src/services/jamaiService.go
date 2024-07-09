@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,7 +16,7 @@ import (
 const BASE_URL = "https://api.jamaibase.com/api/v1/gen_tables"
 const MODEL_NAME = "ellm/Qwen/Qwen2-72B-Instruct"
 
-// Shared configuration struct
+// Shared configuration struct for generating responses
 var GEN_CONFIG = models.GenConfig{
 	EmbeddingModel: "ellm/BAAI/bge-m3",
 	Model:          MODEL_NAME,
@@ -30,11 +29,13 @@ var GEN_CONFIG = models.GenConfig{
 	},
 }
 
+// AuthTransport adds authentication headers to HTTP requests.
 type AuthTransport struct {
 	Transport http.RoundTripper
 	AuthInfo  *models.JamaiAuth
 }
 
+// RoundTrip adds the authentication headers to the request.
 func (t *AuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	reqClone := req.Clone(req.Context())
 	reqClone.Header.Set("Authorization", t.AuthInfo.Authorization)
@@ -42,6 +43,7 @@ func (t *AuthTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.Transport.RoundTrip(reqClone)
 }
 
+// NewJamaiClient creates an HTTP client with authentication headers.
 func NewJamaiClient(authInfo *models.JamaiAuth) *http.Client {
 	return &http.Client{
 		Transport: &AuthTransport{
@@ -51,6 +53,7 @@ func NewJamaiClient(authInfo *models.JamaiAuth) *http.Client {
 	}
 }
 
+// sendRequest sends an HTTP request with the specified method, URL, and data.
 func sendRequest(client *http.Client, method, url string, data interface{}) (*http.Response, error) {
 	body, err := json.Marshal(data)
 	if err != nil {
@@ -65,8 +68,6 @@ func sendRequest(client *http.Client, method, url string, data interface{}) (*ht
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("Content-Type", "application/json")
 
-	// log.Printf("Sending Request:\nMethod: %s\nURL: %s\nHeaders: %v\nBody: %s\n", method, url, req.Header, string(body))
-
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error sending request: %w", err)
@@ -77,9 +78,9 @@ func sendRequest(client *http.Client, method, url string, data interface{}) (*ht
 	}
 
 	return resp, nil
-
 }
 
+// CreateKnowledgeTable creates a knowledge table in JAM.AI.
 func CreateKnowledgeTable(client *http.Client, tableId string) {
 	url := fmt.Sprintf("%s/knowledge", BASE_URL)
 	data := models.CreateAgentKnowledgeTableRequest{
@@ -102,6 +103,7 @@ func CreateKnowledgeTable(client *http.Client, tableId string) {
 	}
 }
 
+// CreateTable creates a table in JAM.AI of the specified type.
 func CreateTable(client *http.Client, tableType models.TableType, tableId string, agents []models.Agent) {
 	if tableType == models.KnowledgeTable {
 		CreateKnowledgeTable(client, tableId)
@@ -206,7 +208,7 @@ func CreateTable(client *http.Client, tableType models.TableType, tableId string
 //     }
 // }
 
-// Function to read the streamed response and collect content when output_column_name is "outputColumn"
+// readAndCollectContent reads the streamed response and collects content when output_column_name matches the specified column.
 func readAndCollectContent(resp *http.Response, outputColumn string) (string, error) {
 	defer resp.Body.Close()
 
@@ -249,7 +251,7 @@ func readAndCollectContent(resp *http.Response, outputColumn string) (string, er
 	return collectedContent.String(), nil
 }
 
-// Function to parse the response into CreateIssueResponse
+// parseCreateIssueResponse parses the response content into a CreateIssueResponse.
 func parseCreateIssueResponse(content string) (models.CreateIssueResponse, error) {
 	var issueResponse models.CreateIssueResponse
 	if err := json.Unmarshal([]byte(content), &issueResponse); err != nil {
@@ -258,6 +260,7 @@ func parseCreateIssueResponse(content string) (models.CreateIssueResponse, error
 	return issueResponse, nil
 }
 
+// AddRow adds a row to the specified table in JAM.AI.
 func AddRow(client *http.Client, tableType models.TableType, tableId string, messages map[string]string) (*http.Response, error) {
 	url := fmt.Sprintf("%s/%s/rows/add", BASE_URL, tableType)
 	data := models.AddRowRequest{
@@ -267,7 +270,6 @@ func AddRow(client *http.Client, tableType models.TableType, tableId string, mes
 	}
 
 	resp, err := sendRequest(client, "POST", url, data)
-
 	if err != nil {
 		log.Printf("Error generating text during interaction: %v", err)
 		return nil, fmt.Errorf("error marshaling data: %w", err)

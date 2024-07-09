@@ -2,18 +2,20 @@ package services
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"strings"
-	"encoding/json"
 
 	"github.com/google/go-github/v41/github"
 	"github.com/wenjielee1/github-bot/models"
 	"github.com/wenjielee1/github-bot/utils"
 )
 
+// CheckChangelogUpdated checks if the CHANGELOG.md file is updated in the pull request and provides suggestions if not.
 func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClient *http.Client, owner, repo string, pr *models.PullRequest) {
+	// List the files changed in the pull request
 	files, _, err := client.PullRequests.ListFiles(ctx, owner, repo, pr.Number, nil)
 	if err != nil {
 		log.Printf("Error listing files for PR #%d: %v", pr.Number, err)
@@ -24,6 +26,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 	var changelogContent string
 	var changes strings.Builder
 
+	// Check if the CHANGELOG.md file is updated and collect the changes
 	for _, file := range files {
 		if file.GetFilename() == "CHANGELOG.md" {
 			updated = true
@@ -33,12 +36,15 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 		changes.WriteString(fmt.Sprintf("Changes: %s\n\n", file.GetPatch()))
 	}
 
+	// Prepare the prompt for suggestions
 	var prompt string
 	if updated {
 		prompt = fmt.Sprintf("Here is the current changelog:\n\n%s\n\nPlease suggest improvements to it based on the following changes:\n\n%s", changelogContent, changes.String())
 	} else {
 		prompt = fmt.Sprintf("Remind the user to update their CHANGELOG.md file. Please provide suggestions for the changelog based on the following changes:\n\n%s", changes.String())
 	}
+
+	// Send the prompt to the LLM for suggestions
 	message := map[string]string{
 		"PullReqBody": prompt,
 	}
@@ -46,14 +52,18 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 	if err != nil {
 		log.Fatalf("Error getting changelog suggestions from LLM: %v", err)
 	}
+
+	// Read and collect the suggestions from the response
 	suggestions, err := readAndCollectContent(resp, "PullReqResponse")
 	if err != nil {
 		log.Fatalf("Error processing PR %d:\n%v", pr.Number, err)
 	}
+
+	// Comment on the pull request with the suggestions
 	utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, suggestions)
 }
 
-// Function to fetch the diff of a specific commit
+// getCommitDiff fetches the diff of a specific commit.
 func getCommitDiff(ctx context.Context, client *github.Client, owner, repo, sha string) (string, error) {
 	commit, _, err := client.Repositories.GetCommit(ctx, owner, repo, sha, nil)
 	if err != nil {
@@ -70,8 +80,9 @@ func getCommitDiff(ctx context.Context, client *github.Client, owner, repo, sha 
 	return diff.String(), nil
 }
 
-// Function to check for potential secret key leakage using LLM across all commits in a PR
+// CheckSecretKeyLeakage checks for potential secret key leakage using LLM across all commits in a pull request.
 func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClient *http.Client, owner, repo string, pr *models.PullRequest) {
+	// List the commits in the pull request
 	commits, _, err := client.PullRequests.ListCommits(ctx, owner, repo, pr.Number, nil)
 	if err != nil {
 		log.Printf("Error listing commits for PR #%d: %v", pr.Number, err)
@@ -80,8 +91,8 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 
 	var changes strings.Builder
 
+	// Check each commit for potential secret key leakage
 	for _, commit := range commits {
-
 		diff, err := getCommitDiff(ctx, client, owner, repo, commit.GetSHA())
 		if err != nil {
 			log.Printf("Error fetching diff for commit %s: %v", commit.GetSHA(), err)
@@ -108,20 +119,19 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 			response := fmt.Sprintf("Commit %s:\n%s", suggestions.Commit, suggestions.Response)
 			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, response)
 		}
-	
 	}
 }
 
-// Function to parse the response into CreateIssueResponse
-func parseCreatePrSecretResponse(content string) (models.CreatePullReqSecretResponse) {
+// parseCreatePrSecretResponse parses the response into CreatePullReqSecretResponse.
+func parseCreatePrSecretResponse(content string) models.CreatePullReqSecretResponse {
 	var prSecretResponse models.CreatePullReqSecretResponse
 	if err := json.Unmarshal([]byte(content), &prSecretResponse); err != nil {
-		log.Fatalf("Error unmarshaling response into CreatePrSecretResponse")
+		log.Fatalf("Error unmarshaling response into CreatePullReqSecretResponse")
 	}
 	return prSecretResponse
 }
 
-
+// SuggestLabelsForPR suggests labels for a pull request.
 // func SuggestLabelsForPR(ctx context.Context, client *github.Client, owner, repo string, pr *models.PullRequest) {
 // 	var labels []string
 // 	labels = append(labels, "new PR")
