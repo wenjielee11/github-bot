@@ -47,18 +47,18 @@ The bot requires several environment variables to function correctly. These can 
 - `TRIAGE_BOT_JAMAI_PROJECT_ID`: The project ID for JamAIBase.
 
 ## Features
-The bot includes several key features:
+The bot includes several key features, each powered by JamAIBase:
 
 ### 1. Issue Handling
-- **Create and Close Issues:** Automatically creates and closes issues based on predefined conditions.
-- **Comment on Issues:** Adds comments to issues when specific events occur.
+- **Create and Close Issues:** Automatically creates and closes issues based on predefined conditions. This feature utilizes JamAIBase's Generative Tables to generate precise issue descriptions and close issues with accurate resolutions.
+- **Comment on Issues:** Adds comments to issues when specific events occur. JamAIBase's built-in RAG and chunk reranking ensure comments are relevant and context-aware.
 
 ### 2. Pull Request Handling
-- **Review Pull Requests:** Automatically reviews pull requests for certain conditions, such as missing CHANGELOG updates or potential secret key leaks.
-- **Suggest Labels:** Automatically suggests labels for new pull requests.
+- **Review Pull Requests:** Automatically reviews pull requests for certain conditions, such as missing CHANGELOG updates or potential secret key leaks. JamAIBase powers the analysis by providing high accuracy checks and generating insightful feedback.
+- **Suggest Labels:** Automatically suggests labels for new pull requests. Leveraging JamAIBase's advanced AI capabilities, the bot can suggest the most appropriate labels based on pull request content.
 
 ### 3. Event Handling
-- **Webhook Events:** Handles various GitHub webhook events, such as `issues`, `pull_request`, and `push`.
+- **Webhook Events:** Handles various GitHub webhook events, such as `issues`, `pull_request`, and `push`. JamAIBase processes the events, ensuring that the bot's responses are timely and accurate.
 
 ## Usage
 1. **Run the Bot:**
