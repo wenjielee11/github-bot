@@ -40,25 +40,38 @@ The `github-bot` repository contains a GitHub bot powered by JamAIBase, written 
 The bot requires several environment variables to function correctly. These can be set in a `.env` file or directly in your environment.
 
 ### Required Environment Variables:
-- `GITHUB_APP_ID`: Your GitHub App ID.
-- `GITHUB_APP_PRIVATE_KEY`: The private key for your GitHub App.
-- `GITHUB_WEBHOOK_SECRET`: The secret used to validate incoming webhooks.
+- `TRIAGE_BOT_PRIVATE_KEY`: The private key for your GitHub App.
+- `TRIAGE_BOT_APP_ID`: Your GitHub App ID.
 - `TRIAGE_BOT_JAMAI_KEY`: The API key for JamAIBase.
 - `TRIAGE_BOT_JAMAI_PROJECT_ID`: The project ID for JamAIBase.
 
+### Installing JambuBot App
+1. **Install the JambuBot App:**
+   - Go to the GitHub Marketplace and install the [JambuBot app](https://github.com/marketplace/jambubot)  on your GitHub account.
+   - Follow the instructions to install the app on your repositories.
+
+2. **Retrieve App ID and Installation ID:**
+   - After installing the app, note down the App ID and Installation ID from the app's settings page.
+
+3. **Generate a Private Key:**
+   - In the app's settings, generate a new private key. This will download a `.pem` file. Keep this file secure.
+
+4. **Set Up Environment Variables:**
+   - Set the required environment variables with the values obtained from the app installation and key generation.
+     
 ## Features
 The bot includes several key features, each powered by JamAIBase:
 
 ### 1. Issue Handling
-- **Create and Close Issues:** Automatically creates and closes issues based on predefined conditions. This feature utilizes JamAIBase's Generative Tables to generate precise issue descriptions and close issues with accurate resolutions.
 - **Comment on Issues:** Adds comments to issues when specific events occur. JamAIBase's built-in RAG and chunk reranking ensure comments are relevant and context-aware.
+- **Issue Labels:** Automatically suggests a label and adds them for you, zero code needed. 
 
 ### 2. Pull Request Handling
 - **Review Pull Requests:** Automatically reviews pull requests for certain conditions, such as missing CHANGELOG updates or potential secret key leaks. JamAIBase powers the analysis by providing high accuracy checks and generating insightful feedback.
 - **Suggest Labels:** Automatically suggests labels for new pull requests. Leveraging JamAIBase's advanced AI capabilities, the bot can suggest the most appropriate labels based on pull request content.
 
 ### 3. Event Handling
-- **Webhook Events:** Handles various GitHub webhook events, such as `issues`, `pull_request`, and `push`. JamAIBase processes the events, ensuring that the bot's responses are timely and accurate.
+- **Workflow Events:** Handles various GitHub action events, such as `issues`, `pull_request`, and `push`. JamAIBase processes the events, ensuring that the bot's responses are timely and accurate.
 
 ## Usage
 1. **Run the Bot:**
@@ -66,8 +79,24 @@ The bot includes several key features, each powered by JamAIBase:
     ./github-bot
     ```
 
-2. **Set Up Webhooks:**
-   - Configure your GitHub repository to send webhooks to the URL where the bot is running.
+2. **Set Up Env Configs:**
+   - Configure your GitHub repository secrets to match the defined env variables.
+
+## Testing
+To test the bot, you need to set the environment variables directly inside the test scripts under `github-bot/test` and generate a `.pem` file for the private key.
+
+1. **Set Environment Variables:**
+   - Edit the test scripts to include the values for `GITHUB_APP_ID`, `GITHUB_INSTALLATION_ID`, `GITHUB_APP_PRIVATE_KEY`, and other required environment variables.
+
+2. **Generate Private Key:**
+   - Generate a `.pem` file after installing the JambuBot app to get the private key. Use this file in your test scripts.
+
+3. **Run Test Scripts:**
+   - Execute the test scripts to verify the bot's functionality. For example:
+     ```sh
+     go run create.go
+     go run delete.go
+     ```
 
 ## Development
 To contribute to the development of this bot, follow these steps:
