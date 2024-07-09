@@ -21,17 +21,23 @@ This repository contains a GitHub bot powered by JamAIBase, written in Go. This 
 
 ## Installation
 1. **Clone the Repository:**
+You should clone this repository into your existing repository as a submodule, or simply copy it over. 
     ```sh
     git clone https://github.com/wenjielee1/github-bot.git
-    cd github-bot
+    mv github-bot path/to/your/repo
     ```
+    or if you are adding it as a submodule, from the root folder,
+   ```
+   git submodule add https://github.com/wenjielee1/github-bot path/to/submodule/github-bot
+   git submodule update --init --recursive
+   ```
 
-2. **Install Dependencies:**
+3. **Install Dependencies:**
     ```sh
     go mod tidy
     ```
 
-3. **Build the Project:**
+4. **Build the Project:**
     ```sh
     go build
     ```
@@ -58,7 +64,11 @@ The bot requires several environment variables to function correctly. These can 
 
 4. **Set Up Environment Variables:**
    - Set the required environment variables with the values obtained from the app installation and key generation.
-     
+
+5. **Setup workflow**
+    - Copy the `github-bot/.github` folder, or if you already have existing workflows, `.github/workflows/github_bot.yml` into your project root.
+    - You wil have to edit `github_bot.yml` to correctly navigate through your repository structure. You may do this under job `Build and run Go Script` 
+        
 ## Features
 The bot includes several key features, each powered by JamAIBase:
 
