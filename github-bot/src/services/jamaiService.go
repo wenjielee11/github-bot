@@ -136,7 +136,7 @@ func CreateTable(client *http.Client, tableType models.TableType, tableId string
 
 	resp, err := sendRequest(client, "POST", url, data)
 	if err != nil {
-		log.Printf("Error creating chat table: %v", err)
+		log.Fatalf("Error creating chat table: %v", err)
 		return
 	}
 	defer resp.Body.Close()
