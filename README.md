@@ -1,8 +1,8 @@
 
-# GitHub Bot
+# JambuBot
 
 ## Overview
-The `github-bot` repository contains a GitHub bot powered by JamAIBase, written in Go. This bot is designed to automate various GitHub repository tasks, including issue management, pull request handling, and more. This documentation provides a detailed guide on how to set up, configure, and use the bot, including an explanation of its main features and components.
+This repository contains a GitHub bot powered by JamAIBase, written in Go. This bot is designed to automate various GitHub repository tasks, including issue management, pull request handling, and more. This documentation provides a detailed guide on how to set up, configure, and use the bot, including an explanation of its main features and components.
 
 ## Table of Contents
 1. [Prerequisites](#prerequisites)
