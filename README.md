@@ -49,7 +49,7 @@ The bot requires several environment variables to function correctly. These can 
 - `TRIAGE_BOT_PRIVATE_KEY`: The private key for your GitHub App.
 - `TRIAGE_BOT_APP_ID`: Your GitHub App ID.
 - `TRIAGE_BOT_JAMAI_KEY`: The API key for JamAIBase.
-- `TRIAGE_BOT_JAMAI_PROJECT_ID`: The project ID for JamAIBase.
+- `TRIAGE_BOT_JAMAI_PROJECT_ID`: The project ID for JamAIBase. You should create a project in [our dashboard](cloud.jamaibase.com)
 
 ### Installing JambuBot App
 1. **Install the JambuBot App:**
@@ -85,9 +85,7 @@ The bot includes several key features, each powered by JamAIBase:
 
 ## Usage
 1. **Run the Bot:**
-    ```sh
-    ./github-bot
-    ```
+   - After setting up your workflow and the installation above, you may simply create an issue or make a PR. Observe the actions tab and issues/PR tab for some cool Jamagic!
 
 2. **Set Up Env Configs:**
    - Configure your GitHub repository secrets to match the defined env variables.
