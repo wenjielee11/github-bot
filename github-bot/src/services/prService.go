@@ -95,6 +95,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 
 	// Check each commit for potential secret key leakage
 	for _, commit := range commits {
+		log.Print("Processing Commit SHA "+ commit.GetSHA())
 		diff, err := getCommitDiff(ctx, client, owner, repo, commit.GetSHA())
 		if err != nil {
 			log.Printf("Error fetching diff for commit %s: %v", commit.GetSHA(), err)
@@ -102,6 +103,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		}
 		changes.WriteString(fmt.Sprintf("Commit: %s\n", commit.GetSHA()))
 		changes.WriteString(fmt.Sprintf("Diff:\n %s", diff))
+		log.Printf(fmt.Sprintf("Diff:\n %s", diff))
 		prompt := changes.String()
 
 		message := map[string]string{
