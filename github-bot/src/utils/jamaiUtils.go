@@ -130,7 +130,7 @@ ${PullReqBody}`
 	} else if columnId == "PullReqSecretsResponse" {
 		const checkSecretsPrompt = `# Instructions
 
-Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any type of variable name or type. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
+Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any type of form. Note that a commit SHA is NOT a secret leak. Also check if the users are correctly utilizing environment variables instead of directly adding secretsinto the code.If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
 
 # Response Template
 
