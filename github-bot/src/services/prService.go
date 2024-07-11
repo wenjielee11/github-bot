@@ -103,7 +103,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		}
 		changes.WriteString(fmt.Sprintf("Commit: %s\n", commit.GetSHA()))
 		changes.WriteString(fmt.Sprintf("Diff:\n %s", diff))
-		log.Printf(fmt.Sprintf("Diff:\n %s", diff))
+	
 		prompt := changes.String()
 
 		message := map[string]string{
@@ -118,7 +118,12 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		if err != nil {
 			log.Fatalf("Error processing PR %d:\n%v", pr.Number, err)
 		}
-		suggestions := parseCreatePrSecretResponse(result)
+		suggestions, err := parseCreatePrSecretResponse(result)
+		if err!=nil{
+			log.Printf("Error unmarshaling secret response:\n%v", err)
+			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance!", commit.GetSHA()))
+			continue
+		}
 		if suggestions.Leak {
 			response := fmt.Sprintf("Commit %s:\n%s", suggestions.Commit, suggestions.Response)
 			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, response)
@@ -127,12 +132,12 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 }
 
 // parseCreatePrSecretResponse parses the response into CreatePullReqSecretResponse.
-func parseCreatePrSecretResponse(content string) models.CreatePullReqSecretResponse {
+func parseCreatePrSecretResponse(content string) (models.CreatePullReqSecretResponse, error) {
 	var prSecretResponse models.CreatePullReqSecretResponse
 	if err := json.Unmarshal([]byte(content), &prSecretResponse); err != nil {
-		log.Fatalf("Error unmarshaling response into CreatePullReqSecretResponse")
+		return prSecretResponse, err
 	}
-	return prSecretResponse
+	return prSecretResponse, nil
 }
 
 // SuggestLabelsForPR suggests labels for a pull request.
