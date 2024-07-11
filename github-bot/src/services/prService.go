@@ -17,6 +17,7 @@ import (
 func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClient *http.Client, owner, repo string, pr *models.PullRequest) {
 	// List the files changed in the pull request
 	files, _, err := client.PullRequests.ListFiles(ctx, owner, repo, pr.Number, nil)
+
 	if err != nil {
 		log.Printf("Error listing files for PR #%d: %v", pr.Number, err)
 		return
@@ -28,6 +29,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 
 	// Check if the CHANGELOG.md file is updated and collect the changes
 	for _, file := range files {
+		log.Printf("Processing PR file "+ file.GetFilename())
 		if file.GetFilename() == "CHANGELOG.md" {
 			updated = true
 			changelogContent = file.GetPatch()

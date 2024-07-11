@@ -174,7 +174,13 @@ PullReqSecretsBody2
 
 Analyze the git diff described in the User Input and respond in the same format as the examples above.
 
-Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the JSON-friendly format for parsing.
+Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the JSON-friendly format for parsing, and follow the template:
+
+{
+  "leak": true or false,
+  "commit": "the SHA of the leaked commit, if any.",
+  "response": "The file name, your response on the suspected leak."
+}
 
 # User Input
 ${PullReqSecretsBody}`
