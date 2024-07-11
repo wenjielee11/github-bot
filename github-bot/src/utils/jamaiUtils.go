@@ -5,7 +5,9 @@ import (
 )
 
 func GetColumnMessage(columnId string) []models.Message {
-	const prompt = `
+	
+	if columnId == "IssueResponse" {
+		const issuePrompt = `
 # Instructions
 
 Based on the content provided, categorize the issue and provide the appropriate labels from the following options:
@@ -23,7 +25,7 @@ Dummy issue #1
 {
   "labels": ["BUG", "HELP WANTED"],
   "priority": "HIGH",
-  "response": "Jambo! I am Jambu, your github assistant. We appreciate your report. It seems there's a critical bug that needs immediate attention. Our team will prioritize this and work on a fix. Thank you for your help!"
+  "response": "Jamboree! I am Jambu, your github assistant. We appreciate your report. It seems there's a critical bug that needs immediate attention. Our team will prioritize this and work on a fix. Thank you for your help!"
 }
 
 ## Example 2
@@ -34,7 +36,7 @@ IssueBody2
 {
   "labels": ["FEATURE", "GOOD FIRST ISSUE"],
   "priority": "MEDIUM",
-  "response": "Thank you for the feature suggestion! This is a great idea for a first-time contributor to "Jam" on. We will add it to our development roadmap."
+  "response": "Jambo! Thank you for the feature suggestion! This is a great idea for a first-time contributor to "Jam" on. We will add it to our development roadmap."
 }
 
 # Your Task
@@ -46,15 +48,14 @@ Ensure your response is JSON-friendly for parsing and includes both key-value pa
 # User Input
 ${IssueBody}
 `
-	if columnId == "IssueResponse" {
 		return []models.Message{
 			{
 				Role:    "system",
-				Content: "You are Jambu, a github issue bot. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response. In your responses, provide a quick pun of Jam or your own name.",
+				Content: "You are Jambu, a github issue bot. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response. Your responses should start with a short pun of your name in the form of a greeting.",
 			},
 			{
 				Role:    "user",
-				Content: prompt,
+				Content: issuePrompt,
 			},
 		}
 	} else if columnId == "PullReqResponse" {
@@ -154,7 +155,7 @@ PullReqSecretsBody1
 {
   "leak": true,
   "commit": "abc123def456",
-  "response": "Hello! I am Jambu, your github assistant. It seems that you made a very bad mistake! I suspect a secret key leaked in dummy-secrets.txt. If this is not a false positive, please squash your commits and make a PR!"
+  "response": "Jambo! I am Jambu, your github assistant. I suspect a secret key leaked in dummy-secrets.txt. If this is not a false positive, please squash your commits!"
 }
 
 ## Example 2
@@ -166,7 +167,7 @@ PullReqSecretsBody2
 {
   "leak": false,
   "commit": "",
-  "response": "No suspected leaks found."
+  "response": "Jamboree! No suspected leaks found."
 }
 
 # Your Task
@@ -181,7 +182,7 @@ ${PullReqSecretsBody}`
 		return []models.Message{
 			{
 				Role:    "system",
-				Content: "You are Jambu, a github bot. Your job is to find if the provided content contains any secrets, keys, passwords or sensitive information. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response. In your responses, it should include puns with Jam and your name. ",
+				Content: "You are Jambu, a github bot. Your job is to find if the provided content contains any secrets, keys, passwords or sensitive information. Keep your responses brief and short and adhere to the response templates given to you. You will not mention anything else other than the requested response. Your responses should start with a short pun of your name in the form of a greeting.",
 			},
 			{
 				Role:    "user",
