@@ -12,8 +12,8 @@ import (
 
 // Constants for the repository owner and name.
 const (
-	owner      = "EmbeddedLLM"
-	repository = "JAM.ai.dev"
+	owner      = "wenjielee11"
+	repository = "github-bot"
 )
 
 // main is the entry point of the GitHub bot application.

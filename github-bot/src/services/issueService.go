@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/google/go-github/v41/github"
 	"github.com/wenjielee1/github-bot/models"
@@ -17,7 +18,7 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	message := map[string]string{
 		"IssueBody": issue.Title + "\n" + issue.Body,
 	}
-
+	
 	// Add the issue details to the table and get the response
 	resp, err := AddRow(jamaiClient, models.ActionTable, tableId, message)
 	if err != nil {
@@ -35,16 +36,31 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	if err != nil {
 		log.Fatalf("Error parsing create issue response: %v", err)
 	}
-
+	
 	// Append priority label to the result labels
 	labels := append(result.Labels, "priority: "+result.Priority)
 
+	LabelIssue(ctx, client, jamaiClient, tableId, owner, repo, issue, labels)
+
+	// Comment on the issue with the response
+	utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, result.Response)
+}
+
+func LabelIssue(ctx context.Context, client *github.Client, jamaiClient *http.Client, tableId string, owner, repo string, issue *models.Issue, labels []string){
+	currentLabels, _, err:= client.Issues.ListLabelsByIssue(ctx, owner, repo, issue.Number, nil) 
+	if err != nil {
+        log.Fatalf("Error retrieving labels: %v", err)
+    }
+	for _, label:= range currentLabels{
+		
+		if strings.HasPrefix(*label.Name, "priority:") || strings.HasPrefix(*label.Name, "status:") {
+            log.Printf("Found label with prefix priority or status, skipping label: "+ *label.Name)
+            return
+        }
+	}
 	// Create priority labels in the repository if they do not exist
 	utils.CreatePriorityLabels(ctx, client, owner, repo)
 
 	// Add labels to the issue
 	utils.AddLabels(ctx, client, owner, repo, issue.Number, labels)
-
-	// Comment on the issue with the response
-	utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, result.Response)
 }
