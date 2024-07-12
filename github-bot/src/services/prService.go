@@ -92,10 +92,11 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		return
 	}
 
-	var changes strings.Builder
+	
 
 	// Check each commit for potential secret key leakage
 	for _, commit := range commits {
+		var changes strings.Builder
 		log.Print("Processing Commit SHA "+ commit.GetSHA())
 		diff, err := getCommitDiff(ctx, client, owner, repo, commit.GetSHA())
 		if err != nil {
