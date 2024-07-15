@@ -12,7 +12,7 @@ func GetColumnMessage(columnId string) []models.Message {
 
 Based on the content provided, categorize the issue and provide the appropriate labels from the following options:
 
-- Labels: "BUG", "FEATURE", "DOCUMENTATION", "ENHANCEMENT", "GOOD FIRST ISSUE", "HELP WANTED", "INVALID", "QUESTION"
+- Labels: "BUG", "DOCUMENTATION", "GOOD FIRST ISSUE", "HELP WANTED", "INVALID", "QUESTION"
 - Priority: "LOW", "MEDIUM", "HIGH", "CRITICAL"
 
 # Examples
@@ -34,7 +34,7 @@ IssueBody2
 
 ### Response
 {
-  "labels": ["FEATURE", "GOOD FIRST ISSUE"],
+  "labels": ["GOOD FIRST ISSUE"],
   "priority": "MEDIUM",
   "response": "Jambo! Thank you for the feature suggestion! This is a great idea for a first-time contributor to "Jam" on. We will add it to our development roadmap."
 }

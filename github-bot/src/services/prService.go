@@ -24,7 +24,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 	}
 
 	updated := false
-	var changelogContent string
+	// var changelogContent string
 	var changes strings.Builder
 
 	// Check if the CHANGELOG.md file is updated and collect the changes
@@ -32,7 +32,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 		log.Printf("Processing PR file "+ file.GetFilename())
 		if file.GetFilename() == "CHANGELOG.md" {
 			updated = true
-			changelogContent = file.GetPatch()
+			// changelogContent = file.GetPatch()
 		}
 		changes.WriteString(fmt.Sprintf("File: %s\n", file.GetFilename()))
 		changes.WriteString(fmt.Sprintf("Changes: %s\n\n", file.GetPatch()))
@@ -40,8 +40,8 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 
 	// Prepare the prompt for suggestions
 	var prompt string
-	if updated {
-		prompt = fmt.Sprintf("Here is the current changelog:\n\n%s\n\nPlease suggest improvements to it based on the following changes:\n\n%s", changelogContent, changes.String())
+	if !updated {
+		prompt = fmt.Sprintf("Remind the user to update their CHANGELOG.md file. Please provide suggestions for the changelog based on the following changes:\n\n%s", changes.String())
 	} else {
 		prompt = fmt.Sprintf("Remind the user to update their CHANGELOG.md file. Please provide suggestions for the changelog based on the following changes:\n\n%s", changes.String())
 	}
