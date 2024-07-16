@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/google/go-github/v41/github"
 	"github.com/wenjielee1/github-bot/models"
@@ -28,9 +27,7 @@ func HandlePullRequestEvent(ctx context.Context, client *github.Client, jamaiCli
 
 	// Cleanup of previous bot comments on a PR synchronize.
 	if eventPayload.Action == "synchronize" {
-		botName := os.Getenv("TRIAGE_BOT_NAME")
-		log.Printf("Retrieved botName:%s\n", botName)
-		services.DeleteBotComments(ctx, client, jamaiClient, owner, repo, pr, botName)
+		services.DeleteBotComments(ctx, client, jamaiClient, owner, repo, pr, "jambubot")
 	}
 
 	// Delegate various checks and actions to the services layer
