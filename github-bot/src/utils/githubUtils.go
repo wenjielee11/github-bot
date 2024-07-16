@@ -80,3 +80,11 @@ func labelExists(ctx context.Context, client *github.Client, owner, repo, labelN
 	}
 	return false, nil
 }
+
+func DeleteComment(ctx context.Context, client *github.Client, owner string, repo string, commentId int64) (bool, error) {
+	_, err := client.Issues.DeleteComment(ctx, owner, repo, commentId)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}

@@ -29,7 +29,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 
 	// Check if the CHANGELOG.md file is updated and collect the changes
 	for _, file := range files {
-		log.Printf("Processing PR file "+ file.GetFilename())
+		log.Printf("Processing PR file " + file.GetFilename())
 		if file.GetFilename() == "CHANGELOG.md" {
 			updated = true
 			// changelogContent = file.GetPatch()
@@ -92,16 +92,14 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		return
 	}
 
-	
-
 	// Check each commit for potential secret key leakage
 	for _, commit := range commits {
 		var changes strings.Builder
-		log.Print("Processing Commit SHA "+ commit.GetSHA())
+		log.Print("Processing Commit SHA " + commit.GetSHA())
 		diff, err := getCommitDiff(ctx, client, owner, repo, commit.GetSHA())
 		if err != nil {
 			log.Printf("Error fetching diff for commit %s: %v", commit.GetSHA(), err)
-			
+
 		}
 		changes.WriteString(fmt.Sprintf("Commit: %s\n", commit.GetSHA()))
 		changes.WriteString(fmt.Sprintf("Diff:\n %s", diff))
@@ -121,7 +119,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 			log.Fatalf("Error processing PR %d:\n%v", pr.Number, err)
 		}
 		suggestions, err := parseCreatePrSecretResponse(result)
-		if err!=nil{
+		if err != nil {
 			log.Printf("Error unmarshaling secret response:\n%v", err)
 			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance!", commit.GetSHA()))
 			continue
@@ -140,6 +138,23 @@ func parseCreatePrSecretResponse(content string) (models.CreatePullReqSecretResp
 		return prSecretResponse, err
 	}
 	return prSecretResponse, nil
+}
+
+// Deletes any existing comments of a bot name
+func DeleteBotComments(ctx context.Context, client *github.Client, jamaiClient *http.Client, owner, repo string, pr *models.PullRequest, botName string) {
+	comments, _, err := client.Issues.ListComments(ctx, owner, repo, pr.Number, nil)
+	if err != nil {
+		log.Printf("Error fetching comments on PR #%d:\n%v", pr.Number, err)
+	}
+	for _, comment := range comments {
+		if *comment.User.Login == botName {
+			log.Printf("Deleting %s's comment with ID %d", botName, *comment.ID)
+			_, err := utils.DeleteComment(ctx, client, owner, repo, *comment.ID)
+			if err != nil {
+				log.Printf("Error deleting %s's comment with comment ID %d:\n%v", botName, *comment.ID, err)
+			}
+		}
+	}
 }
 
 // SuggestLabelsForPR suggests labels for a pull request.
