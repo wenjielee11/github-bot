@@ -147,6 +147,7 @@ func DeleteBotComments(ctx context.Context, client *github.Client, jamaiClient *
 		log.Printf("Error fetching comments on PR #%d:\n%v", pr.Number, err)
 	}
 	for _, comment := range comments {
+		log.Printf("Listing comments... comment user:%s",*comment.User.Login)
 		if *comment.User.Login == botName {
 			log.Printf("Deleting %s's comment with ID %d", botName, *comment.ID)
 			_, err := utils.DeleteComment(ctx, client, owner, repo, *comment.ID)
