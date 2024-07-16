@@ -42,8 +42,8 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 
 	LabelIssue(ctx, client, jamaiClient, tableId, owner, repo, issue, labels)
 
-	// Comment on the issue with the response
-	utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, result.Response)
+	// Comment on the issue with the response. Disabled for now as of 16/7
+	// utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, result.Response)
 }
 
 func LabelIssue(ctx context.Context, client *github.Client, jamaiClient *http.Client, tableId string, owner, repo string, issue *models.Issue, labels []string){
