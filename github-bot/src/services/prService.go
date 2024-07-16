@@ -148,7 +148,7 @@ func DeleteBotComments(ctx context.Context, client *github.Client, jamaiClient *
 	}
 	for _, comment := range comments {
 		log.Printf("Listing comments... comment user:%s",*comment.User.Login)
-		if *comment.User.Login == botName {
+		if strings.Contains(*comment.User.Login, botName) {
 			log.Printf("Deleting %s's comment with ID %d", botName, *comment.ID)
 			_, err := utils.DeleteComment(ctx, client, owner, repo, *comment.ID)
 			if err != nil {
