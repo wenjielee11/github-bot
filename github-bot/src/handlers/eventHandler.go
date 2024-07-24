@@ -3,15 +3,15 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
-	"log"
-	"os"
-
 	"github.com/google/go-github/v41/github"
 	"github.com/wenjielee1/github-bot/models"
 	"github.com/wenjielee1/github-bot/services"
 	"github.com/wenjielee1/github-bot/utils"
 	"golang.org/x/oauth2"
+	"io/ioutil"
+	"log"
+	"os"
+	"strings"
 )
 
 // HandleGitHubEvents processes GitHub events by reading event data,
@@ -47,11 +47,26 @@ func HandleGitHubEvents(owner, repo, token string) {
 	}
 
 	// Initialize the JAM.AI client and prepare messages for different event types
+	opts := &github.ListOptions{PerPage: 100}
+	repoLabels, _, err := client.Issues.ListLabels(ctx, owner, repo, opts)
+
+	if err != nil {
+		log.Printf("Error listing labels: %v", err)
+	}
+	var labels []string
+	for _, label := range repoLabels {
+		if !strings.Contains(*label.Name, "priority") {
+			labels = append(labels, *label.Name)
+		}
+	}
+	// Join labels into a single string
+	labelsStr := strings.Join(labels, ", ")
+
 	jamaiClient := services.NewJamaiClient(services.GetJamAiHeader())
 	actionTableId := owner + "_" + repo
-	issueResponseMessage := utils.GetColumnMessage("IssueResponse")
-	prResponseMessage := utils.GetColumnMessage("PullReqResponse")
-	prSecretsMessage := utils.GetColumnMessage("PullReqSecretsResponse")
+	issueResponseMessage := utils.GetColumnMessage("IssueResponse", labelsStr)
+	prResponseMessage := utils.GetColumnMessage("PullReqResponse", labelsStr)
+	prSecretsMessage := utils.GetColumnMessage("PullReqSecretsResponse", labelsStr)
 
 	// Define the agents and their respective messages
 	agents := []models.Agent{
@@ -62,7 +77,7 @@ func HandleGitHubEvents(owner, repo, token string) {
 		{ColumnID: "PullReqResponse", Messages: prResponseMessage},
 		{ColumnID: "PullReqSecretsResponse", Messages: prSecretsMessage},
 	}
-
+	
 	// Create a table in the JAM.AI client with the defined agents
 	services.CreateTable(jamaiClient, models.ActionTable, actionTableId, agents)
 

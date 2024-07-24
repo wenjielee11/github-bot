@@ -53,13 +53,13 @@ func LabelIssue(ctx context.Context, client *github.Client, jamaiClient *http.Cl
     }
 	for _, label:= range currentLabels{
 		
-		if strings.HasPrefix(*label.Name, "priority:") || strings.HasPrefix(*label.Name, "status:") {
+		if strings.Contains(*label.Name, "priority") || strings.Contains(*label.Name, "status") {
             log.Printf("Found label with prefix priority or status, skipping label: "+ *label.Name)
             return
         }
 	}
-	// Create priority labels in the repository if they do not exist
-	utils.CreatePriorityLabels(ctx, client, owner, repo)
+	// // Create priority labels in the repository if they do not exist
+	// utils.CreatePriorityLabels(ctx, client, owner, repo)
 
 	// Add labels to the issue
 	utils.AddLabels(ctx, client, owner, repo, issue.Number, labels)
