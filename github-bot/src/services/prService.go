@@ -124,6 +124,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance!", commit.GetSHA()))
 			continue
 		}
+		
 		if suggestions.Leak {
 			response := fmt.Sprintf("Commit %s:\n%s", suggestions.Commit, suggestions.Response)
 			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, response)

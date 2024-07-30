@@ -20,8 +20,8 @@ const MODEL_NAME = "ellm/Qwen/Qwen2-72B-Instruct"
 var GEN_CONFIG = models.GenConfig{
 	EmbeddingModel: "ellm/BAAI/bge-m3",
 	Model:          MODEL_NAME,
-	Temperature:    1,
-	MaxTokens:      1000,
+	Temperature:    0.01,
+	MaxTokens:      2000,
 	TopP:           0.1,
 	RagParams: &models.RagParams{
 		K:              5,

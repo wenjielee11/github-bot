@@ -10,55 +10,17 @@ func GetColumnMessage(columnId string, labels string) []models.Message {
 
 	if columnId == "IssueResponse" {
 		
-		const issuePrompt = `		
+		const issuePrompt = `			
 # Instructions
 
 Based on the content provided, categorize the issue and provide the appropriate labels from the following options:
 
-- Labels: %s
+- Labels: status: can't reproduce, status: confirmed, status: duplicate, status: help wanted, status: wontfix, type: bug, type: discussion / question, type: documentation, type: enhancement / feature, type: epic
 - Priority: "low", "medium", "high", "critical"
+If no developer roadmap was provided, the priority should be "None". Otherwise, label your priorities based on the roadmap provided.
 
 # Developer Roadmap
-## v0.3 (upcoming)
-(Breaking) Add versioning into table metadata - [FEAT] [Backend] GenTable metadata should include a "version" str column #137
-(Breaking) Add object type into gen_config - [FEAT] [Backend] GenTable generation config should include an "object" key to support more config object types #136
-(Breaking) Change ChatRequest.stop default to None
-Deprecate deploy in duplicate_table
-Note that the above must be implemented in order to ease the implementation of the following:
-
-Existing Template import into Discover Template (Backend) - [FEAT][Backend] Method to publish table (template) to "Discover Template"  #238
-Discover Template import into project (UI) - [FEAT][UI] Discover Templates - Import Templates  #237
-Table import and export - [FEAT] [UI] [Backend] Allow the import or export of projects and tables #124
-Project import and export - [FEAT] [UI] [Backend] Allow the import or export of projects and tables #124
-Extras
-
-Billing refactor
-New pricing model - [FEAT] [Backend] New pricing and billing model #235
-Use ELLM API keys if user does not supply their own - [FEAT] [Backend] New pricing and billing model #235
-Fix storage usage computation - [BUG] [Backend] Billing: Storage usage sometimes shows negative usage #234
-Project rename
-TS SDK: Update get_conversation_thread to accept 2 additional optional parameters for filtering by row_id and specifying whether to include the row in the returned thread.
-Expose parent_id in table list method in Python and TS SDKs - [BUG] [Python SDK] Expose parent_id in table list method #252
-Use one Infinity instance for multiple models - Heads up: Infinity:0.0.42 now supports multiple models JamAIBase#5
-Automatic context length management: Reduce the number of chunks dynamically depending on context length
-
-## v0.4
-(Breaking) Remove deploy in duplicate_table
-Template marketplace - [FEAT] Link Sharing and Table Duplication #211
-Table sharing / iframe views - [FEAT] Link Sharing and Table Duplication #211
-Role-based access control - [FEAT] [UI, Backend] Allow role-based access control #121
-
-## Others
-Janitor process - [FEAT] [Backend] Implement a separate janitor / maintenance process #233
-Task queues for long-running operations such as row add
-Future
-(Breaking) Image input - [FEAT] [UI, Backend] Allow Image and File Inputs #120
-(Breaking) File input - [FEAT] [UI, Backend] Allow Image and File Inputs #120
-Flexible Knowledge Table and Chat Table schemas
-KT: User defined embedding columns
-CT: More than one chat thread
-CT: Allow input interpolation in chat column
-Unify all tables into one type
+None
 
 # Examples
 
@@ -86,7 +48,7 @@ IssueBody2
 
 # Your Task
 
-Analyze the issue described by User Input and respond in the same format as the examples above. Your responses and suggestions should be helpful, and fitting of an assistant software engineer. You must provide debugging help and substantial suggestions. Your suggestions should not have puns and should be serious.
+Analyze the issue described by User Input and respond in the same format as the examples above. Your responses and suggestions should be helpful, and fitting of an assistant software engineer. You must provide debugging help and substantial suggestions. Your suggestions should not have puns and should be serious. If no developer roadmap was provided, the priority should be "None". Otherwise, label your priorities based on the roadmap provided.
 
 1. Identify the primary issue or potential improvements in the code, if any.
 2. Provide specific, actionable steps to address the identified issue and the issue described by the user input.
@@ -182,19 +144,14 @@ ${PullReqBody}`
 			},
 		}
 	} else if columnId == "PullReqSecretsResponse" {
-		const checkSecretsPrompt = `# Instructions
+		const checkSecretsPrompt = `
+# Instructions
 
-Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any type of form. Note that a commit SHA is NOT a secret leak. Also check if the users are correctly utilizing environment variables instead of directly adding secretsinto the code.If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
+Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any form. Note that a commit SHA is NOT a secret leak. Also, check if the users are correctly utilizing environment variables instead of directly adding secrets into the code. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
 
 # Response Template
 
-Your response must be in the template of:
-
-{
-  "leak": true or false,
-  "commit": "the SHA of the leaked commit, if any.",
-  "response": "The file name, your response on the suspected leak."
-}
+Your response must be in plain text.
 
 # Examples
 
@@ -211,28 +168,20 @@ CI/CD
 @@ -132,19 +133,27 @@ Generative Table
 
 UI
-
 -- Standardize & improve UI errors, including validation errors
 - UI design changes
 -- Obfuscate org secrets
 -- Allow org members to view jamai keys
 
-
 ### Response
-
-{
-  "leak": false,
-  "commit": "",
-  "response": "Jambo! I am Jambu, your github assistant. There are no leaks in detected. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!"
-}
+Jambo! I am Jambu, your GitHub assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!
 
 ## Example 2
 ### Pull Request Secrets Body
 Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
 Diff:
 File: .env
-@@ -9,7 +9,6 @@ DOCIO_URL=http://docio:6979/api/docio
-UNSTRUCTUREDIO_URL=http://unstructuredio:6989
+@@ -9,7 +9,6 @@
 
 # Configuration
 -SERVICE_KEY=
@@ -246,11 +195,7 @@ File: CHANGELOG.md
 
 ### Response
 
-{
-  "leak": false,
-  "commit": "",
-  "response": "Jamboree! No suspected leaks found."
-}
+Jamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.
 
 ## Example 3
 ### Pull Request Secrets Body
@@ -262,26 +207,44 @@ File: client.py
 +ABYAAQ=ew11465098_1111
 
 ### Response
-{
-  "leak": true,
-  "commit": "",
-  "response": "Jambo! I am Jambu, your github assistant. I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!"
-}
+
+Jambo! I am Jambu, your GitHub assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
+
+## Example 4
+### Pull Request Secrets Body
+Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
+Diff:
+File: services/api/src/owl/entrypoints/api.py
+@@ -421,6 +421,16 @@ async def authenticate(request: Request, call_next):
+organization_id=org_id,
+project_id=project_id,
+api_key=token,
++ external_api_keys_provided=dict(
++ openai=openai_api_key != ENV_CONFIG.openai_api_key_plain,
++ anthropic=anthropic_api_key != ENV_CONFIG.anthropic_api_key_plain,
++ gemini=gemini_api_key != ENV_CONFIG.gemini_api_key_plain,
++ cohere=cohere_api_key != ENV_CONFIG.cohere_api_key_plain,
++ groq=groq_api_key != ENV_CONFIG.groq_api_key_plain,
++ together=together_api_key != ENV_CONFIG.together_api_key_plain,
++ jina=jina_api_key != ENV_CONFIG.jina_api_key_plain,
++ voyage=voyage_api_key != ENV_CONFIG.voyage_api_key_plain,
++ ),
+)
+# Add API keys into header
+headers = dict(request.scope["headers"])
+
+### Response
+Jambo! I am Jambu, your GitHub assistant. There are no secret leaks in 90ea6326f26465cf4ea71d7393fcc0bbb7053608. The code was correctly using environment variables, and no alphanumeric keys were being used; they were just stored as variables.
 
 # Your Task
 
 Analyze the git diff described in the User Input and respond in the same format as the examples above.
 
-Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the JSON-friendly format for parsing, inlcuding both key value pairs, and follow the template:
-
-{
-  "leak": true or false,
-  "commit": "the SHA of the leaked commit, if any.",
-  "response": "The file name, your response on the suspected leak."
-}
+Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the plain text format for parsing, including both key value pairs, and follow the template:
 
 # User Input
-${PullReqSecretsBody}`
+${PullReqSecretsBody}
+`
 
 		return []models.Message{
 			{
@@ -294,6 +257,81 @@ ${PullReqSecretsBody}`
 			},
 		}
 
+	} else if columnId == "SecretsJSONResponse" {
+		const secretsJSONPrompt = 
+`
+# Instructions
+Based on the plain text response from the first model, extract and generate a JSON output.
+
+# Context
+
+The first model checks for any sensitive keys, secrets, passwords, or information accidentally added in the provided git diff. It determines if there is a leak and provides details such as the commit SHA, file name, and a response about the suspected leak.
+
+# Response Template
+
+Your response must be in the template of:
+
+{
+  "leak": true or false,
+  "commit": "the SHA of the leaked commit, if any.",
+  "response": "The file name, your response on the suspected leak."
+}
+
+# Examples
+
+## Example 1
+### Plain Text Response
+Jambo! I am Jambu, your github assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!
+
+### JSON Response
+
+{
+  "leak": false,
+  "commit": "da0ab0ba3330ac795276ebbbe4f4d3efda346c05",
+  "response": "CHANGELOG.md mentioned secrets obfuscation but no keys were found."
+}
+
+## Example 2
+### Plain Text Response
+Jamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.
+
+### JSON Response
+
+{
+  "leak": false,
+  "commit": "90ea6326f26465cf4ea71d7393fcc0bbb7053608",
+  "response": "No suspected leaks found."
+}
+
+## Example 3
+### Plain Text Response
+Jambo! I am Jambu, your github assistant. I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
+
+### JSON Response
+
+{
+  "leak": true,
+  Jambo! I am Jambu, your github assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
+
+  "commit": "",
+  "response": "I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!"
+}
+
+# Your Task
+
+Based on the plain text response provided, extract the necessary information and generate the JSON output in the same format as the examples above. Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the JSON-friendly format for parsing, including both key value pairs, and follow the template.
+
+`
+return []models.Message{
+	{
+		Role:    "system",
+		Content: "Your job is to parse responses from another model into a JSON friendly format. You must adhere to the response templates given to you. You will not add any content other than the input that was provided, and simply parse them.",
+	},
+	{
+		Role:    "user",
+		Content: secretsJSONPrompt,
+	},
+}
 	}
 	return nil
 }

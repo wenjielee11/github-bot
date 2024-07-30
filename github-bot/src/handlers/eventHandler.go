@@ -67,7 +67,7 @@ func HandleGitHubEvents(owner, repo, token string) {
 	issueResponseMessage := utils.GetColumnMessage("IssueResponse", labelsStr)
 	prResponseMessage := utils.GetColumnMessage("PullReqResponse", labelsStr)
 	prSecretsMessage := utils.GetColumnMessage("PullReqSecretsResponse", labelsStr)
-
+	secretsJSONMessage := utils.GetColumnMessage("SecretsJSONResponse", labelsStr)
 	// Define the agents and their respective messages
 	agents := []models.Agent{
 		{ColumnID: "IssueBody", Messages: nil},
@@ -76,6 +76,7 @@ func HandleGitHubEvents(owner, repo, token string) {
 		{ColumnID: "IssueResponse", Messages: issueResponseMessage},
 		{ColumnID: "PullReqResponse", Messages: prResponseMessage},
 		{ColumnID: "PullReqSecretsResponse", Messages: prSecretsMessage},
+		{ColumnID: "SecretsJSONResponse", Messages: secretsJSONMessage},
 	}
 	
 	// Create a table in the JAM.AI client with the defined agents
