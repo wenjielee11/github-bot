@@ -128,7 +128,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		if suggestions.Leak {
 			var response string
 			if suggestions.Commit == "" {
-				response = fmt.Sprintf("Commit %s:\n%s", *commit.SHA, suggestions.Response)
+				response = fmt.Sprintf("Commit %s:\n%s", commit.GetSHA(), suggestions.Response)
 			} else {
 				response = fmt.Sprintf("Commit %s:\n%s", suggestions.Commit, suggestions.Response)
 			}
