@@ -317,6 +317,9 @@ Jambo! I am Jambu, your github assistant. I suspect a secret key leaked in clien
   "response": "I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!"
 }
 
+# Actual Plain Text Response
+${PullReqSecretsResponse}
+
 # Your Task
 
 Based on the plain text response provided, extract the necessary information and generate the JSON output in the same format as the examples above. Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the JSON-friendly format for parsing, including both key value pairs, and follow the template.
