@@ -56,7 +56,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 	}
 
 	// Read and collect the suggestions from the response
-	suggestions, err := readAndCollectContent(resp, "SecretsJSONResponse")
+	suggestions, err := readAndCollectContent(resp, "PullReqResponse")
 	if err != nil {
 		log.Fatalf("Error processing PR %d:\n%v", pr.Number, err)
 	}
@@ -114,7 +114,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		if err != nil {
 			log.Fatalf("Error getting secret key leakage suggestions from LLM: %v", err)
 		}
-		result, err := readAndCollectContent(resp, "PullReqSecretsResponse")
+		result, err := readAndCollectContent(resp, "SecretsJSONResponse")
 		if err != nil {
 			log.Fatalf("Error processing PR %d:\n%v", pr.Number, err)
 		}
