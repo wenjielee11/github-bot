@@ -56,7 +56,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 	}
 
 	// Read and collect the suggestions from the response
-	suggestions, err := readAndCollectContent(resp, "PullReqResponse")
+	suggestions, err := readAndCollectContent(resp, "SecretsJSONResponse")
 	if err != nil {
 		log.Fatalf("Error processing PR %d:\n%v", pr.Number, err)
 	}
@@ -124,9 +124,14 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance!", commit.GetSHA()))
 			continue
 		}
-		
+
 		if suggestions.Leak {
-			response := fmt.Sprintf("Commit %s:\n%s", suggestions.Commit, suggestions.Response)
+			var response string
+			if suggestions.Commit == "" {
+				response = fmt.Sprintf("Commit %s:\n%s", *commit.SHA, suggestions.Response)
+			} else {
+				response = fmt.Sprintf("Commit %s:\n%s", suggestions.Commit, suggestions.Response)
+			}
 			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, response)
 		}
 	}
@@ -148,7 +153,7 @@ func DeleteBotComments(ctx context.Context, client *github.Client, jamaiClient *
 		log.Printf("Error fetching comments on PR #%d:\n%v", pr.Number, err)
 	}
 	for _, comment := range comments {
-		log.Printf("Listing comments... comment user:%s",*comment.User.Login)
+		log.Printf("Listing comments... comment user:%s", *comment.User.Login)
 		if strings.Contains(*comment.User.Login, botName) {
 			log.Printf("Deleting %s's comment with ID %d", botName, *comment.ID)
 			_, err := utils.DeleteComment(ctx, client, owner, repo, *comment.ID)
