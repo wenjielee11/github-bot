@@ -15,7 +15,7 @@ func GetColumnMessage(columnId string, labels string) []models.Message {
 
 Based on the content provided, categorize the issue and provide the appropriate labels from the following options:
 
-- Labels: status: can't reproduce, status: confirmed, status: duplicate, status: help wanted, status: wontfix, type: bug, type: discussion / question, type: documentation, type: enhancement / feature, type: epic
+- Labels: %s
 - Priority: "low", "medium", "high", "critical"
 If no developer roadmap was provided, the priority should be "None". Otherwise, label your priorities based on the roadmap provided.
 
