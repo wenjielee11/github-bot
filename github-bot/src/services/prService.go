@@ -124,7 +124,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 		suggestions, err := parseCreatePrSecretResponse(result)
 		if err != nil {
 			log.Printf("Error unmarshaling secret response:\n%v", err)
-			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance! Error Message:\n %v", commit.GetSHA(), err))
+			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance! Error Message:\n %v\nResponse: %s", commit.GetSHA(), err, result))
 			continue
 		}
 
