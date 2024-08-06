@@ -18,7 +18,7 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	message := map[string]string{
 		"IssueBody": issue.Title + "\n" + issue.Body,
 	}
-	
+
 	// Add the issue details to the table and get the response
 	resp, err := AddRow(jamaiClient, models.ActionTable, tableId, message)
 	if err != nil {
@@ -36,7 +36,7 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	if err != nil {
 		log.Fatalf("Error parsing create issue response: %v", err)
 	}
-	
+
 	// Append priority label to the result labels
 	labels := append(result.Labels, "priority: "+result.Priority)
 
@@ -46,21 +46,38 @@ func ProcessIssue(ctx context.Context, client *github.Client, jamaiClient *http.
 	// utils.CommentOnIssue(ctx, client, owner, repo, issue.Number, result.Response)
 }
 
-func LabelIssue(ctx context.Context, client *github.Client, jamaiClient *http.Client, tableId string, owner, repo string, issue *models.Issue, labels []string){
-	currentLabels, _, err:= client.Issues.ListLabelsByIssue(ctx, owner, repo, issue.Number, nil) 
+func LabelIssue(ctx context.Context, client *github.Client, jamaiClient *http.Client, tableId string, owner, repo string, issue *models.Issue, labels []string) {
+
+	currentLabels, _, err := client.Issues.ListLabelsByIssue(ctx, owner, repo, issue.Number, nil)
 	if err != nil {
-        log.Fatalf("Error retrieving labels: %v", err)
-    }
-	for _, label:= range currentLabels{
-		
-		if strings.Contains(*label.Name, "priority") || strings.Contains(*label.Name, "status") {
-            log.Printf("Found label with prefix priority or status, skipping label: "+ *label.Name)
-            return
-        }
+		log.Fatalf("Error retrieving labels: %v", err)
 	}
+	for _, label := range currentLabels {
+
+		if strings.Contains(*label.Name, "priority") || strings.Contains(*label.Name, "status") {
+			log.Printf("Found label with prefix priority or status, skipping label: " + *label.Name)
+			return
+		}
+	}
+	repoLabels := utils.GetLabels(ctx, client, owner, repo)
+	log.Printf("Retrieved Label Names in LabelIssue():\n%v", repoLabels)
+	// Create a map for quick lookup of GitHub labels
+	labelMap := make(map[string]bool)
+	for _, repoLabel := range repoLabels {
+		labelMap[*repoLabel.Name] = true
+	}
+
+	// Filter the label names to prevent the bot from hallucinating new labels.
+	var filteredLabelNames []string
+	for _, name := range labels {
+		if labelMap[name] {
+			filteredLabelNames = append(filteredLabelNames, name)
+		}
+	}
+	log.Printf("Filtered Label Names:\n%v", filteredLabelNames)
 	// // Create priority labels in the repository if they do not exist
 	// utils.CreatePriorityLabels(ctx, client, owner, repo)
 
 	// Add labels to the issue
-	utils.AddLabels(ctx, client, owner, repo, issue.Number, labels)
+	utils.AddLabels(ctx, client, owner, repo, issue.Number, filteredLabelNames)
 }

@@ -47,12 +47,7 @@ func HandleGitHubEvents(owner, repo, token string) {
 	}
 
 	// Initialize the JAM.AI client and prepare messages for different event types
-	opts := &github.ListOptions{PerPage: 100}
-	repoLabels, _, err := client.Issues.ListLabels(ctx, owner, repo, opts)
-
-	if err != nil {
-		log.Printf("Error listing labels: %v", err)
-	}
+	repoLabels := utils.GetLabels(ctx, client, owner, repo)
 	var labels []string
 	for _, label := range repoLabels {
 		if !strings.Contains(*label.Name, "priority") {
@@ -63,7 +58,7 @@ func HandleGitHubEvents(owner, repo, token string) {
 	labelsStr := strings.Join(labels, ", ")
 
 	jamaiClient := services.NewJamaiClient(services.GetJamAiHeader())
-	actionTableId := owner + "_" + repo
+	actionTableId := owner + "_" + repo +"_"+ utils.GetBotVersion()
 	issueResponseMessage := utils.GetColumnMessage("IssueResponse", labelsStr)
 	prResponseMessage := utils.GetColumnMessage("PullReqResponse", labelsStr)
 	prSecretsMessage := utils.GetColumnMessage("PullReqSecretsResponse", labelsStr)

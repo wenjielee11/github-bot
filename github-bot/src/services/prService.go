@@ -94,7 +94,9 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 
 	// Check each commit for potential secret key leakage
 	for _, commit := range commits {
-		if strings.Contains(strings.ToLower(commit.GetCommit().GetMessage()),"merge branch 'main' into"){ 
+		// Skip the current commit if its a merge commit (commits with more than one parent are merge commits.
+		// A commit parent is a reference to the preceding commit(s) from which the current commit is derived.
+		if len(commit.Parents) > 1 {
 			continue
 		}
 		var changes strings.Builder

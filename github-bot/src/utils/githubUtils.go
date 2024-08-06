@@ -8,6 +8,17 @@ import (
 	"github.com/google/go-github/v41/github"
 )
 
+// Gets all labels of a repo
+func GetLabels(ctx context.Context, client *github.Client, owner, repo string)([]*github.Label) {
+	opts := &github.ListOptions{PerPage: 100}
+	repoLabels, _, err := client.Issues.ListLabels(ctx, owner, repo, opts)
+
+	if err != nil {
+		log.Printf("Error listing labels: %v", err)
+	}
+	return repoLabels
+}
+
 // AddLabels adds labels to a specified GitHub issue.
 func AddLabels(ctx context.Context, client *github.Client, owner, repo string, issueNumber int, labels []string) {
 	_, _, err := client.Issues.AddLabelsToIssue(ctx, owner, repo, issueNumber, labels)

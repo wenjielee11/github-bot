@@ -16,7 +16,7 @@ import (
 
 const (
 	appID          = 934870                               // Replace with your App ID
-	installationID = 52398709                             // Replace with your Installation ID
+	installationID = 52704794                             // Replace with your Installation ID
 	privateKeyPath = "../issuetracker.private-key.pem" // Path to your private key
 	baseBranch     = "main"                               // Base branch for creating new branches
 )
