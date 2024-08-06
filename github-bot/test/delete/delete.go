@@ -119,6 +119,7 @@ func closeDummyIssues(ctx context.Context, client *github.Client, owner, repo st
 func closeDummyPullRequests(ctx context.Context, client *github.Client, owner, repo string) {
 	prs, _, err := client.PullRequests.List(ctx, owner, repo, &github.PullRequestListOptions{
 		State: "open",
+		ListOptions: github.ListOptions{PerPage: 500},
 	})
 	if err != nil {
 		log.Fatalf("Error listing pull requests: %v", err)

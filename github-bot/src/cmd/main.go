@@ -21,7 +21,6 @@ const (
 // and starts handling GitHub events.
 func main() {
 	log.Println("Starting the GitHub bot")
-
 	// Retrieve the GitHub App ID from environment variables.
 	// The GitHub App ID is a unique identifier for the GitHub App. It is assigned by GitHub when the app is created.
 	appIDStr := os.Getenv("TRIAGE_BOT_APP_ID")
@@ -69,5 +68,5 @@ func main() {
 	}
 
 	// Handle GitHub events using the installation token.
-	handlers.HandleGitHubEvents(owner, repository, installationToken)
+	handlers.HandleGitHubEvents(utils.GetRepoOwner(owner), utils.GetRepoName(repository), installationToken)
 }
