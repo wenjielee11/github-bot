@@ -9,6 +9,7 @@ import (
 	"github.com/google/go-github/v41/github"
 	"github.com/wenjielee1/github-bot/models"
 	"github.com/wenjielee1/github-bot/services"
+	"github.com/wenjielee1/github-bot/utils"
 )
 
 // HandleIssueEvent processes GitHub issue events by extracting issue data from the event payload
@@ -27,5 +28,5 @@ func HandleIssueEvent(ctx context.Context, client *github.Client, jamaiClient *h
 	log.Printf("Processing issue: %s", issue.Title)
 
 	// Delegate the processing of the issue to the services layer
-	services.ProcessIssue(ctx, client, jamaiClient, fmt.Sprintf("%s_%s", owner, repo), owner, repo, issue)
+	services.ProcessIssue(ctx, client, jamaiClient, fmt.Sprintf("%s_%s_%s", owner, repo, utils.GetBotVersion()), owner, repo, issue)
 }
