@@ -50,7 +50,7 @@ func CheckChangelogUpdated(ctx context.Context, client *github.Client, jamaiClie
 	message := map[string]string{
 		"PullReqBody": prompt,
 	}
-	resp, err := AddRow(jamaiClient, models.ActionTable, fmt.Sprintf("%s_%s", owner, repo), message)
+	resp, err := AddRow(jamaiClient, models.ActionTable, fmt.Sprintf("%s_%s_%s", owner, repo, utils.GetBotVersion()), message)
 	if err != nil {
 		log.Fatalf("Error getting changelog suggestions from LLM: %v", err)
 	}
@@ -115,7 +115,7 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 			"PullReqSecretsBody": prompt,
 		}
 
-		resp, err := AddRow(jamaiClient, models.ActionTable, fmt.Sprintf("%s_%s", owner, repo), message)
+		resp, err := AddRow(jamaiClient, models.ActionTable, fmt.Sprintf("%s_%s_%s", owner, repo, utils.GetBotVersion()), message)
 		if err != nil {
 			log.Fatalf("Error getting secret key leakage suggestions from LLM: %v", err)
 		}
