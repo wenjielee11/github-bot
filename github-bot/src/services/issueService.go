@@ -75,9 +75,8 @@ func LabelIssue(ctx context.Context, client *github.Client, jamaiClient *http.Cl
 		}
 	}
 	log.Printf("Filtered Label Names:\n%v", filteredLabelNames)
-	// // Create priority labels in the repository if they do not exist
+	// Create priority labels in the repository if they do not exist
 	// utils.CreatePriorityLabels(ctx, client, owner, repo)
-
 	// Add labels to the issue
 	utils.AddLabels(ctx, client, owner, repo, issue.Number, filteredLabelNames)
 }

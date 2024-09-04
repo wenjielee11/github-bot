@@ -122,7 +122,6 @@ Changes: @@ -0,0 +1 @@
 
 - Get a vector representation of a given input that can be easily consumed by machine learning models and algorithms. Note that the vectors are NOT normalized.
 - Similar to OpenAI's embeddings endpoint
-- Resolves #86
 
 # Your Task
 
@@ -145,105 +144,140 @@ ${PullReqBody}`
 		}
 	} else if columnId == "PullReqSecretsResponse" {
 		const checkSecretsPrompt = `
-# Instructions
 
-Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any form. Note that a commit SHA is NOT a secret leak. Also, check if the users are correctly utilizing environment variables instead of directly adding secrets into the code. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
+		# Instructions
 
-# Response Template
-
-Your response must be in plain text.
-
-# Examples
-
-## Example 1
-### Pull Request Secrets Body
-Commit: da0ab0ba3330ac795276ebbbe4f4d3efda346c05
-Diff:
-File: CHANGELOG.md
-@@ -60,6 +60,7 @@ UI
-+- Added dialog to import files and match columns
-- Setup frontend auth test for future tests
-
-CI/CD
-@@ -132,19 +133,27 @@ Generative Table
-
-UI
--- Standardize & improve UI errors, including validation errors
-- UI design changes
--- Obfuscate org secrets
--- Allow org members to view jamai keys
-
-### Response
-Jambo! I am Jambu, your GitHub assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!
-
-## Example 2
-### Pull Request Secrets Body
-Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
-Diff:
-File: .env
-@@ -9,7 +9,6 @@
-
-# Configuration
--SERVICE_KEY=
-OWL_PORT=6969
-OWL_WORKERS=1
-OWL_DB_DIR=db
-File: CHANGELOG.md
-@@ -52,10 +52,8 @@ Generative Table
-- Table import and export via Parquet file.
-- Row deletion now accepts a list of row IDs.
-
-### Response
-
-Jamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.
-
-## Example 3
-### Pull Request Secrets Body
-Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
-Diff:
-File: client.py
-+def my_func:
-+ print("Some random function")
-+ABYAAQ=ew11465098_1111
-
-### Response
-
-Jambo! I am Jambu, your GitHub assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
-
-## Example 4
-### Pull Request Secrets Body
-Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
-Diff:
-File: services/api/src/owl/entrypoints/api.py
-@@ -421,6 +421,16 @@ async def authenticate(request: Request, call_next):
-organization_id=org_id,
-project_id=project_id,
-api_key=token,
-+ external_api_keys_provided=dict(
-+ openai=openai_api_key != ENV_CONFIG.openai_api_key_plain,
-+ anthropic=anthropic_api_key != ENV_CONFIG.anthropic_api_key_plain,
-+ gemini=gemini_api_key != ENV_CONFIG.gemini_api_key_plain,
-+ cohere=cohere_api_key != ENV_CONFIG.cohere_api_key_plain,
-+ groq=groq_api_key != ENV_CONFIG.groq_api_key_plain,
-+ together=together_api_key != ENV_CONFIG.together_api_key_plain,
-+ jina=jina_api_key != ENV_CONFIG.jina_api_key_plain,
-+ voyage=voyage_api_key != ENV_CONFIG.voyage_api_key_plain,
-+ ),
-)
-# Add API keys into header
-headers = dict(request.scope["headers"])
-
-### Response
-Jambo! I am Jambu, your GitHub assistant. There are no secret leaks in 90ea6326f26465cf4ea71d7393fcc0bbb7053608. The code was correctly using environment variables, and no alphanumeric keys were being used; they were just stored as variables.
-
-# Your Task
-
-Analyze the git diff described in the User Input and respond in the same format as the examples above.
-
-Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the plain text format for parsing, including both key value pairs, and follow the template:
-
-# User Input
-${PullReqSecretsBody}
+		Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any form. Note that a commit SHA is NOT a secret leak. Also, check if the users are correctly utilizing environment variables instead of directly adding secrets into the code. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
+		
+		# Response Template
+		
+		Your response must be in plain text.
+		
+		# Examples
+		
+		## Example 1
+		### Pull Request Secrets Body
+		Commit: da0ab0ba3330ac795276ebbbe4f4d3efda346c05
+		Diff:
+		File: CHANGELOG.md
+		@@ -60,6 +60,7 @@ UI
+		+- Added dialog to import files and match columns
+		- Setup frontend auth test for future tests
+		
+		CI/CD
+		@@ -132,19 +133,27 @@ Generative Table
+		
+		UI
+		-- Standardize & improve UI errors, including validation errors
+		- UI design changes
+		-- Obfuscate org secrets
+		-- Allow org members to view jamai keys
+		
+		### Response
+		Jambo! I am Jambu, your GitHub assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!
+		
+		## Example 2
+		### Pull Request Secrets Body
+		Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
+		Diff:
+		File: .env
+		@@ -9,7 +9,6 @@
+		
+		# Configuration
+		-SERVICE_KEY=
+		OWL_PORT=6969
+		OWL_WORKERS=1
+		OWL_DB_DIR=db
+		File: CHANGELOG.md
+		@@ -52,10 +52,8 @@ Generative Table
+		- Table import and export via Parquet file.
+		- Row deletion now accepts a list of row IDs.
+		
+		### Response
+		
+		Jamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.
+		
+		## Example 3
+		### Pull Request Secrets Body
+		Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
+		Diff:
+		File: client.py
+		+def my_func:
+		+ print("Some random function")
+		+ABYAAQ=ew11465098_1111
+		
+		### Response
+		
+		Jambo! I am Jambu, your GitHub assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
+		
+		## Example 4
+		### Pull Request Secrets Body
+		Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
+		Diff:
+		File: services/api/src/owl/entrypoints/api.py
+		@@ -421,6 +421,16 @@ async def authenticate(request: Request, call_next):
+		organization_id=org_id,
+		project_id=project_id,
+		api_key=token,
+		+ external_api_keys_provided=dict(
+		+ openai=openai_api_key != ENV_CONFIG.openai_api_key_plain,
+		+ anthropic=anthropic_api_key != ENV_CONFIG.anthropic_api_key_plain,
+		+ gemini=gemini_api_key != ENV_CONFIG.gemini_api_key_plain,
+		+ cohere=cohere_api_key != ENV_CONFIG.cohere_api_key_plain,
+		+ groq=groq_api_key != ENV_CONFIG.groq_api_key_plain,
+		+ together=together_api_key != ENV_CONFIG.together_api_key_plain,
+		+ jina=jina_api_key != ENV_CONFIG.jina_api_key_plain,
+		+ voyage=voyage_api_key != ENV_CONFIG.voyage_api_key_plain,
+		+ ),
+		)
+		# Add API keys into header
+		headers = dict(request.scope["headers"])
+		
+		### Response
+		Jambo! I am Jambu, your GitHub assistant. There are no secret leaks in 90ea6326f26465cf4ea71d7393fcc0bbb7053608. The code was correctly using environment variables, and no alphanumeric keys were being used; they were just stored as variables.
+		
+		## Example 5
+		Commit: 95e8cdac98545c8b3ed35e04628da1d5a6182a8c
+		Diff:
+		File: .github/workflows/ci.yml
+		@@ -200,7 +200,7 @@ jobs:
+		run: |
+		set -e
+		export JAMAI_API_BASE=http://localhost:6969/api
+		- export JAMAI_API_KEY=lalala
+		+ export JAMAI_API_KEY=this-is-a-fake-key-for-testing
+		python -m pytest -vv --doctest-modules --no-success-flaky-report services/api/tests
+		
+		### Response
+		Hello! Jambu here. There are no secret leaks detected in  95e8cdac98545c8b3ed35e04628da1d5a6182a8c. Although the api key has a value pair "this-is-a-fake-key-for-testing", it is fake so there are no leaks.
+		
+		## Example 6
+		Commit: fc1dfc75d05e5014c77634505ff839f3952e966b
+		Diff:
+		File: .github/workflows/ci.yml
+		@@ -39,23 +39,23 @@ jobs:
+		run: |
+		git --version
+		- # - name: Authenticating to the Container registry
+		- # run: echo $JH_PAT | docker login ghcr.io -u tanjiahuei@gmail.com --password-stdin
+		- # env:
+		- # JH_PAT: /$/{{ secrets.JH_PAT }}/
+		+ - name: Authenticating to the Container registry
+		+ run: echo $JH_PAT | docker login ghcr.io -u tanjiahuei@gmail.com --password-stdin
+		+ env:
+		+ JH_PAT: /$/{{ secrets.JH_PAT }}/
+		
+		### Response
+		Hello! Jambu here. There are no secret leaks detected in fc1dfc75d05e5014c77634505ff839f3952e966b. JH_PAT is correctly using github secrets and there are no hardcoded keys, as it is correctly being sourced from github secrets. Jam along!
+		
+		# Your Task
+		
+		Analyze the git diff described in the User Input and respond in the same format as the examples above.
+		
+		Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the plain text format for parsing, including both key value pairs, and follow the template:
+		
+		# User Input
+		${PullReqSecretsBody}		
 `
 
 		return []models.Message{
