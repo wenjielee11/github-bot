@@ -9,60 +9,10 @@ import (
 func GetColumnMessage(columnId string, labels string) []models.Message {
 
 	if columnId == "IssueResponse" {
-		
-		const issuePrompt = `			
-# Instructions
 
-Based on the content provided, categorize the issue and provide the appropriate labels from the following options:
+		const issuePrompt = "\t\t\n# Instructions\n\nBased on the content provided, categorize the issue and provide the appropriate labels from the following options:\n\n- Labels: %s\n- Priority: \"low\", \"medium\", \"high\", \"critical\"\nIf no developer roadmap was provided, the priority should be \"None\". Otherwise, label your priorities based on the roadmap provided.\n\n# Developer Roadmap\nNone\n\n# Examples\n\n## Example 1\n### Issue Body\nDummy issue #1\n\n### Response\n{\n  \"labels\": [\"type: bug\", \"status: help wanted\"],\n  \"priority\": \"high\",\n  \"response\": \"Jamboree! I am Jambu, your github assistant. We appreciate your report. It seems there's a critical bug that needs immediate attention. Our team will prioritize this and work on a fix. Thank you for your help!\"\n}\n\n## Example 2\n### Issue Body\nIssueBody2\n\n### Response\n{\n  \"labels\": [\"type: enhancement / feature\"],\n  \"priority\": \"medium\",\n  \"response\": \"Jambo! Thank you for the feature suggestion! This is a great idea for a first-time contributor to \\\"Jam\\\" on. We will add it to our development roadmap.\"\n}\n\n# Your Task\n\nAnalyze the issue described by User Input and respond in the same format as the examples above. Your responses and suggestions should be helpful, and fitting of an assistant software engineer. You must provide debugging help and substantial suggestions. Your suggestions should not have puns and should be serious. If no developer roadmap was provided, the priority should be \"None\". Otherwise, label your priorities based on the roadmap provided.\n\n1. Identify the primary issue or potential improvements in the code, if any.\n2. Provide specific, actionable steps to address the identified issue and the issue described by the user input.\n3. Suggest any additional improvements for code quality or performance.\n4. Provide suggestions and advice to help get user started, from warnings to potential problems they might face.\n5. If it is a feature request, you may provide code suggestions or high level implementations or guides, pointers to get the users started.\n\nEnsure your response is JSON-friendly for parsing and includes both key-value pairs for \"labels\", \"priority\", and \"response\". Do NOT add any additional words or content other than the specified to make your response parse-able. Do NOT use markdown syntax for your response.\n\n# User Input\n${IssueBody}\n"
 
-- Labels: %s
-- Priority: "low", "medium", "high", "critical"
-If no developer roadmap was provided, the priority should be "None". Otherwise, label your priorities based on the roadmap provided.
-
-# Developer Roadmap
-None
-
-# Examples
-
-## Example 1
-### Issue Body
-Dummy issue #1
-
-### Response
-{
-  "labels": ["type: bug", "status: help wanted"],
-  "priority": "high",
-  "response": "Jamboree! I am Jambu, your github assistant. We appreciate your report. It seems there's a critical bug that needs immediate attention. Our team will prioritize this and work on a fix. Thank you for your help!"
-}
-
-## Example 2
-### Issue Body
-IssueBody2
-
-### Response
-{
-  "labels": ["type: enhancement / feature"],
-  "priority": "medium",
-  "response": "Jambo! Thank you for the feature suggestion! This is a great idea for a first-time contributor to \"Jam\" on. We will add it to our development roadmap."
-}
-
-# Your Task
-
-Analyze the issue described by User Input and respond in the same format as the examples above. Your responses and suggestions should be helpful, and fitting of an assistant software engineer. You must provide debugging help and substantial suggestions. Your suggestions should not have puns and should be serious. If no developer roadmap was provided, the priority should be "None". Otherwise, label your priorities based on the roadmap provided.
-
-1. Identify the primary issue or potential improvements in the code, if any.
-2. Provide specific, actionable steps to address the identified issue and the issue described by the user input.
-3. Suggest any additional improvements for code quality or performance.
-4. Provide suggestions and advice to help get user started, from warnings to potential problems they might face.
-5. If it is a feature request, you may provide code suggestions or high level implementations or guides, pointers to get the users started.
-
-Ensure your response is JSON-friendly for parsing and includes both key-value pairs for "labels", "priority", and "response". Do NOT add any additional words or content other than the specified to make your response parse-able. Do NOT use markdown syntax for your response.
-
-# User Input
-${IssueBody}
-`
-
-		finalPrompt:=fmt.Sprintf(issuePrompt, labels)
+		finalPrompt := fmt.Sprintf(issuePrompt, labels)
 
 		return []models.Message{
 			{
@@ -75,62 +25,7 @@ ${IssueBody}
 			},
 		}
 	} else if columnId == "PullReqResponse" {
-		const changelogPrompt = `# Instructions
-
-Based on the content provided, suggest how the "CHANGELOG.md" could be updated. The "PullReqBody" will be a git diff.
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
-
-- Each section is broken into:
-
-  - "ADDED": New features.
-  - "CHANGED / FIXED": Changes in existing functionality, or any bug fixes.
-  - "DEPRECATED": Soon-to-be removed features.
-  - "REMOVED": Removed features.
-  - "SECURITY": Anything related to vulnerabilities.
-
-- The version number mentioned here refers to the cloud version.
-
-# Examples
-
-## Example 1
-
-### Pull Request Body
-File: dummy-file-1.txt
-Changes: @@ -0,0 +1 @@
-+This is a dummy file for branch dummy-branch-1
-\ No newline at end of file
-
-File: dummy-secrets.txt
-Changes: @@ -0,0 +1 @@
-+SECRET_KEY=12345-abcde-67890-fghij
-\ No newline at end of file
-
-### Your response:
-
-# Suggested Changelog:
-
-## [Unreleased]
-
-### ADDED
-
-"Embeddings" endpoint
-
-- Get a vector representation of a given input that can be easily consumed by machine learning models and algorithms. Note that the vectors are NOT normalized.
-- Similar to OpenAI's embeddings endpoint
-
-# Your Task
-
-Analyze the git diff described in User Input and suggest appropriate updates to the "CHANGELOG.md" in the same format as the examples above.
-
-Ensure your response is clear and concise, providing meaningful and insightful updates that accurately reflect the changes described in the git diff.
-
-# User Input
-${PullReqBody}`
+		const changelogPrompt = "# Instructions\n\nBased on the content provided, suggest how the \"CHANGELOG.md\" could be updated. The \"PullReqBody\" will be a git diff.\n\n# Changelog\n\nAll notable changes to this project will be documented in this file.\n\nThe format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).\n\n- Each section is broken into:\n\n  - \"ADDED\": New features.\n  - \"CHANGED / FIXED\": Changes in existing functionality, or any bug fixes.\n  - \"DEPRECATED\": Soon-to-be removed features.\n  - \"REMOVED\": Removed features.\n  - \"SECURITY\": Anything related to vulnerabilities.\n\n- The version number mentioned here refers to the cloud version.\n\n# Examples\n\n## Example 1\n\n### Pull Request Body\nFile: dummy-file-1.txt\nChanges: @@ -0,0 +1 @@\n+This is a dummy file for branch dummy-branch-1\n\\ No newline at end of file\n\nFile: dummy-secrets.txt\nChanges: @@ -0,0 +1 @@\n+SECRET_KEY=12345-abcde-67890-fghij\n\\ No newline at end of file\n\n### Your response:\n\n# Suggested Changelog:\n\n## [Unreleased]\n\n### ADDED\n\n\"Embeddings\" endpoint\n\n- Get a vector representation of a given input that can be easily consumed by machine learning models and algorithms. Note that the vectors are NOT normalized.\n- Similar to OpenAI's embeddings endpoint\n\n# Your Task\n\nAnalyze the git diff described in User Input and suggest appropriate updates to the \"CHANGELOG.md\" in the same format as the examples above.\n\nEnsure your response is clear and concise, providing meaningful and insightful updates that accurately reflect the changes described in the git diff.\n\n# User Input\n${PullReqBody}"
 
 		return []models.Message{
 			{
@@ -143,142 +38,7 @@ ${PullReqBody}`
 			},
 		}
 	} else if columnId == "PullReqSecretsResponse" {
-		const checkSecretsPrompt = `
-
-		# Instructions
-
-		Based on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any form. Note that a commit SHA is NOT a secret leak. Also, check if the users are correctly utilizing environment variables instead of directly adding secrets into the code. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.
-		
-		# Response Template
-		
-		Your response must be in plain text.
-		
-		# Examples
-		
-		## Example 1
-		### Pull Request Secrets Body
-		Commit: da0ab0ba3330ac795276ebbbe4f4d3efda346c05
-		Diff:
-		File: CHANGELOG.md
-		@@ -60,6 +60,7 @@ UI
-		+- Added dialog to import files and match columns
-		- Setup frontend auth test for future tests
-		
-		CI/CD
-		@@ -132,19 +133,27 @@ Generative Table
-		
-		UI
-		-- Standardize & improve UI errors, including validation errors
-		- UI design changes
-		-- Obfuscate org secrets
-		-- Allow org members to view jamai keys
-		
-		### Response
-		Jambo! I am Jambu, your GitHub assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!
-		
-		## Example 2
-		### Pull Request Secrets Body
-		Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
-		Diff:
-		File: .env
-		@@ -9,7 +9,6 @@
-		
-		# Configuration
-		-SERVICE_KEY=
-		OWL_PORT=6969
-		OWL_WORKERS=1
-		OWL_DB_DIR=db
-		File: CHANGELOG.md
-		@@ -52,10 +52,8 @@ Generative Table
-		- Table import and export via Parquet file.
-		- Row deletion now accepts a list of row IDs.
-		
-		### Response
-		
-		Jamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.
-		
-		## Example 3
-		### Pull Request Secrets Body
-		Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
-		Diff:
-		File: client.py
-		+def my_func:
-		+ print("Some random function")
-		+ABYAAQ=ew11465098_1111
-		
-		### Response
-		
-		Jambo! I am Jambu, your GitHub assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
-		
-		## Example 4
-		### Pull Request Secrets Body
-		Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608
-		Diff:
-		File: services/api/src/owl/entrypoints/api.py
-		@@ -421,6 +421,16 @@ async def authenticate(request: Request, call_next):
-		organization_id=org_id,
-		project_id=project_id,
-		api_key=token,
-		+ external_api_keys_provided=dict(
-		+ openai=openai_api_key != ENV_CONFIG.openai_api_key_plain,
-		+ anthropic=anthropic_api_key != ENV_CONFIG.anthropic_api_key_plain,
-		+ gemini=gemini_api_key != ENV_CONFIG.gemini_api_key_plain,
-		+ cohere=cohere_api_key != ENV_CONFIG.cohere_api_key_plain,
-		+ groq=groq_api_key != ENV_CONFIG.groq_api_key_plain,
-		+ together=together_api_key != ENV_CONFIG.together_api_key_plain,
-		+ jina=jina_api_key != ENV_CONFIG.jina_api_key_plain,
-		+ voyage=voyage_api_key != ENV_CONFIG.voyage_api_key_plain,
-		+ ),
-		)
-		# Add API keys into header
-		headers = dict(request.scope["headers"])
-		
-		### Response
-		Jambo! I am Jambu, your GitHub assistant. There are no secret leaks in 90ea6326f26465cf4ea71d7393fcc0bbb7053608. The code was correctly using environment variables, and no alphanumeric keys were being used; they were just stored as variables.
-		
-		## Example 5
-		Commit: 95e8cdac98545c8b3ed35e04628da1d5a6182a8c
-		Diff:
-		File: .github/workflows/ci.yml
-		@@ -200,7 +200,7 @@ jobs:
-		run: |
-		set -e
-		export JAMAI_API_BASE=http://localhost:6969/api
-		- export JAMAI_API_KEY=lalala
-		+ export JAMAI_API_KEY=this-is-a-fake-key-for-testing
-		python -m pytest -vv --doctest-modules --no-success-flaky-report services/api/tests
-		
-		### Response
-		Hello! Jambu here. There are no secret leaks detected in  95e8cdac98545c8b3ed35e04628da1d5a6182a8c. Although the api key has a value pair "this-is-a-fake-key-for-testing", it is fake so there are no leaks.
-		
-		## Example 6
-		Commit: fc1dfc75d05e5014c77634505ff839f3952e966b
-		Diff:
-		File: .github/workflows/ci.yml
-		@@ -39,23 +39,23 @@ jobs:
-		run: |
-		git --version
-		- # - name: Authenticating to the Container registry
-		- # run: echo $JH_PAT | docker login ghcr.io -u tanjiahuei@gmail.com --password-stdin
-		- # env:
-		- # JH_PAT: /$/{{ secrets.JH_PAT }}/
-		+ - name: Authenticating to the Container registry
-		+ run: echo $JH_PAT | docker login ghcr.io -u tanjiahuei@gmail.com --password-stdin
-		+ env:
-		+ JH_PAT: /$/{{ secrets.JH_PAT }}/
-		
-		### Response
-		Hello! Jambu here. There are no secret leaks detected in fc1dfc75d05e5014c77634505ff839f3952e966b. JH_PAT is correctly using github secrets and there are no hardcoded keys, as it is correctly being sourced from github secrets. Jam along!
-		
-		# Your Task
-		
-		Analyze the git diff described in the User Input and respond in the same format as the examples above.
-		
-		Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the plain text format for parsing, including both key value pairs, and follow the template:
-		
-		# User Input
-		${PullReqSecretsBody}		
-`
+		const checkSecretsPrompt = "\n\n\t\t# Instructions\n\n\t\tBased on the diff provided, check if there are any sensitive keys, secrets, passwords, or information accidentally added. Note that the leak can be in any form. Note that a commit SHA is NOT a secret leak. Also, check if the users are correctly utilizing environment variables instead of directly adding secrets into the code. If there is, provide the commit SHA where it was leaked, and the suspected section and file name.\n\t\t\n\t\t# Response Template\n\t\t\n\t\tYour response must be in plain text.\n\t\t\n\t\t# Examples\n\t\t\n\t\t## Example 1\n\t\t### Pull Request Secrets Body\n\t\tCommit: da0ab0ba3330ac795276ebbbe4f4d3efda346c05\n\t\tDiff:\n\t\tFile: CHANGELOG.md\n\t\t@@ -60,6 +60,7 @@ UI\n\t\t+- Added dialog to import files and match columns\n\t\t- Setup frontend auth test for future tests\n\t\t\n\t\tCI/CD\n\t\t@@ -132,19 +133,27 @@ Generative Table\n\t\t\n\t\tUI\n\t\t-- Standardize & improve UI errors, including validation errors\n\t\t- UI design changes\n\t\t-- Obfuscate org secrets\n\t\t-- Allow org members to view jamai keys\n\t\t\n\t\t### Response\n\t\tJambo! I am Jambu, your GitHub assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!\n\t\t\n\t\t## Example 2\n\t\t### Pull Request Secrets Body\n\t\tCommit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608\n\t\tDiff:\n\t\tFile: .env\n\t\t@@ -9,7 +9,6 @@\n\t\t\n\t\t# Configuration\n\t\t-SERVICE_KEY=\n\t\tOWL_PORT=6969\n\t\tOWL_WORKERS=1\n\t\tOWL_DB_DIR=db\n\t\tFile: CHANGELOG.md\n\t\t@@ -52,10 +52,8 @@ Generative Table\n\t\t- Table import and export via Parquet file.\n\t\t- Row deletion now accepts a list of row IDs.\n\t\t\n\t\t### Response\n\t\t\n\t\tJamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.\n\t\t\n\t\t## Example 3\n\t\t### Pull Request Secrets Body\n\t\tCommit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608\n\t\tDiff:\n\t\tFile: client.py\n\t\t+def my_func:\n\t\t+ print(\"Some random function\")\n\t\t+ABYAAQ=ew11465098_1111\n\t\t\n\t\t### Response\n\t\t\n\t\tJambo! I am Jambu, your GitHub assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!\n\t\t\n\t\t## Example 4\n\t\t### Pull Request Secrets Body\n\t\tCommit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608\n\t\tDiff:\n\t\tFile: services/api/src/owl/entrypoints/api.py\n\t\t@@ -421,6 +421,16 @@ async def authenticate(request: Request, call_next):\n\t\torganization_id=org_id,\n\t\tproject_id=project_id,\n\t\tapi_key=token,\n\t\t+ external_api_keys_provided=dict(\n\t\t+ openai=openai_api_key != ENV_CONFIG.openai_api_key_plain,\n\t\t+ anthropic=anthropic_api_key != ENV_CONFIG.anthropic_api_key_plain,\n\t\t+ gemini=gemini_api_key != ENV_CONFIG.gemini_api_key_plain,\n\t\t+ cohere=cohere_api_key != ENV_CONFIG.cohere_api_key_plain,\n\t\t+ groq=groq_api_key != ENV_CONFIG.groq_api_key_plain,\n\t\t+ together=together_api_key != ENV_CONFIG.together_api_key_plain,\n\t\t+ jina=jina_api_key != ENV_CONFIG.jina_api_key_plain,\n\t\t+ voyage=voyage_api_key != ENV_CONFIG.voyage_api_key_plain,\n\t\t+ ),\n\t\t)\n\t\t# Add API keys into header\n\t\theaders = dict(request.scope[\"headers\"])\n\t\t\n\t\t### Response\n\t\tJambo! I am Jambu, your GitHub assistant. There are no secret leaks in 90ea6326f26465cf4ea71d7393fcc0bbb7053608. The code was correctly using environment variables, and no alphanumeric keys were being used; they were just stored as variables.\n\t\t\n\t\t## Example 5\n\t\tCommit: 95e8cdac98545c8b3ed35e04628da1d5a6182a8c\n\t\tDiff:\n\t\tFile: .github/workflows/ci.yml\n\t\t@@ -200,7 +200,7 @@ jobs:\n\t\trun: |\n\t\tset -e\n\t\texport JAMAI_API_BASE=http://localhost:6969/api\n\t\t- export JAMAI_API_KEY=lalala\n\t\t+ export JAMAI_API_KEY=this-is-a-fake-key-for-testing\n\t\tpython -m pytest -vv --doctest-modules --no-success-flaky-report services/api/tests\n\t\t\n\t\t### Response\n\t\tHello! Jambu here. There are no secret leaks detected in  95e8cdac98545c8b3ed35e04628da1d5a6182a8c. Although the api key has a value pair \"this-is-a-fake-key-for-testing\", it is fake so there are no leaks.\n\t\t\n\t\t## Example 6\n\t\tCommit: fc1dfc75d05e5014c77634505ff839f3952e966b\n\t\tDiff:\n\t\tFile: .github/workflows/ci.yml\n\t\t@@ -39,23 +39,23 @@ jobs:\n\t\trun: |\n\t\tgit --version\n\t\t- # - name: Authenticating to the Container registry\n\t\t- # run: echo $JH_PAT | docker login ghcr.io -u tanjiahuei@gmail.com --password-stdin\n\t\t- # env:\n\t\t- # JH_PAT: /$/{{ secrets.JH_PAT }}/\n\t\t+ - name: Authenticating to the Container registry\n\t\t+ run: echo $JH_PAT | docker login ghcr.io -u tanjiahuei@gmail.com --password-stdin\n\t\t+ env:\n\t\t+ JH_PAT: /$/{{ secrets.JH_PAT }}/\n\t\t\n\t\t### Response\n\t\tHello! Jambu here. There are no secret leaks detected in fc1dfc75d05e5014c77634505ff839f3952e966b. JH_PAT is correctly using github secrets and there are no hardcoded keys, as it is correctly being sourced from github secrets. Jam along!\n\t\t\n\t\t# Your Task\n\t\t\n\t\tAnalyze the git diff described in the User Input and respond in the same format as the examples above.\n\t\t\n\t\tEnsure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the plain text format for parsing, including both key value pairs, and follow the template:\n\t\t\n\t\t# User Input\n\t\t${PullReqSecretsBody}\t\t\n"
 
 		return []models.Message{
 			{
@@ -292,84 +52,17 @@ ${PullReqBody}`
 		}
 
 	} else if columnId == "SecretsJSONResponse" {
-		const secretsJSONPrompt = 
-`
-# Instructions
-Based on the plain text response from the first model, extract and generate a JSON output.
-
-# Context
-
-The first model checks for any sensitive keys, secrets, passwords, or information accidentally added in the provided git diff. It determines if there is a leak and provides details such as the commit SHA, file name, and a response about the suspected leak.
-
-# Response Template
-
-Your response must be in the template of:
-
-{
-  "leak": true or false,
-  "commit": "the SHA of the leaked commit, if any.",
-  "response": "The file name, your response on the suspected leak."
-}
-
-# Examples
-
-## Example 1
-### Plain Text Response
-Jambo! I am Jambu, your github assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!
-
-### JSON Response
-
-{
-  "leak": false,
-  "commit": "da0ab0ba3330ac795276ebbbe4f4d3efda346c05",
-  "response": "CHANGELOG.md mentioned secrets obfuscation but no keys were found."
-}
-
-## Example 2
-### Plain Text Response
-Jamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.
-
-### JSON Response
-
-{
-  "leak": false,
-  "commit": "90ea6326f26465cf4ea71d7393fcc0bbb7053608",
-  "response": "No suspected leaks found."
-}
-
-## Example 3
-### Plain Text Response
-Jambo! I am Jambu, your github assistant. I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
-
-### JSON Response
-
-{
-  "leak": true,
-  Jambo! I am Jambu, your github assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!
-
-  "commit": "",
-  "response": "I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!"
-}
-
-# Actual Plain Text Response
-${PullReqSecretsResponse}
-
-# Your Task
-
-Based on the plain text response provided, extract the necessary information and generate the JSON output in the same format as the examples above. Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the JSON-friendly format for parsing, including both key value pairs, and follow the template.
-
-`
-return []models.Message{
-	{
-		Role:    "system",
-		Content: "Your job is to parse responses from another model into a JSON friendly format. You must adhere to the response templates given to you. You will not add any content other than the input that was provided, and simply parse them.",
-	},
-	{
-		Role:    "user",
-		Content: secretsJSONPrompt,
-	},
-}
+		const secretsJSONPrompt = "\n# Instructions\nBased on the plain text response from the first model, extract and generate a JSON output.\n\n# Context\n\nThe first model checks for any sensitive keys, secrets, passwords, or information accidentally added in the provided git diff. It determines if there is a leak and provides details such as the commit SHA, file name, and a response about the suspected leak.\n\n# Response Template\n\nYour response must be in the template of:\n\n{\n  \"leak\": true or false,\n  \"commit\": \"the SHA of the leaked commit, if any.\",\n  \"response\": \"The file name, your response on the suspected leak.\"\n}\n\n# Examples\n\n## Example 1\n### Plain Text Response\nJambo! I am Jambu, your github assistant. There are no leaks detected in Commit SHA: da0ab0ba3330ac795276ebbbe4f4d3efda346c05. CHANGELOG.md mentioned secrets obfuscation but I did not find any keys in CHANGELOG.md!\n\n### JSON Response\n\n{\n  \"leak\": false,\n  \"commit\": \"da0ab0ba3330ac795276ebbbe4f4d3efda346c05\",\n  \"response\": \"CHANGELOG.md mentioned secrets obfuscation but no keys were found.\"\n}\n\n## Example 2\n### Plain Text Response\nJamboree! No suspected leaks found in Commit: 90ea6326f26465cf4ea71d7393fcc0bbb7053608.\n\n### JSON Response\n\n{\n  \"leak\": false,\n  \"commit\": \"90ea6326f26465cf4ea71d7393fcc0bbb7053608\",\n  \"response\": \"No suspected leaks found.\"\n}\n\n## Example 3\n### Plain Text Response\nJambo! I am Jambu, your github assistant. I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!\n\n### JSON Response\n\n{\n  \"leak\": true,\n  Jambo! I am Jambu, your github assistant. In Commit SHA: 90ea6326f26465cf4ea71d7393fcc0bbb7053608, I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!\n\n  \"commit\": \"\",\n  \"response\": \"I suspect a secret key leaked in client.py. If this is not a false positive, please squash your commits!\"\n}\n\n# Actual Plain Text Response\n${PullReqSecretsResponse}\n\n# Your Task\n\nBased on the plain text response provided, extract the necessary information and generate the JSON output in the same format as the examples above. Ensure your response is clear and concise, providing meaningful and accurate information about any suspected leaks. Adhere to the JSON-friendly format for parsing, including both key value pairs, and follow the template.\n\n"
+		return []models.Message{
+			{
+				Role:    "system",
+				Content: "Your job is to parse responses from another model into a JSON friendly format. You must adhere to the response templates given to you. You will not add any content other than the input that was provided, and simply parse them.",
+			},
+			{
+				Role:    "user",
+				Content: secretsJSONPrompt,
+			},
+		}
 	}
 	return nil
 }
-
