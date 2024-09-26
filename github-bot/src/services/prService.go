@@ -128,8 +128,9 @@ func CheckSecretKeyLeakage(ctx context.Context, client *github.Client, jamaiClie
 			log.Printf("Error unmarshaling secret response:\n%v", err)
 			if strings.Contains(result, "ContextWindowExceededError") {
 				utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! It seems that commit %s was too long to scan for secret leaks. Please shorten your commits next time!", commit.GetSHA()))
+			} else {
+				utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance! Error Message:\n %v\nResponse: %s", commit.GetSHA(), err, result))
 			}
-			utils.CommentOnIssue(ctx, client, owner, repo, pr.Number, fmt.Sprintf("Jambo! I had issues checking commit %s for secret leaks. Please contact my developers for more assistance! Error Message:\n %v\nResponse: %s", commit.GetSHA(), err, result))
 			continue
 		}
 
