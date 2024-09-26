@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	BotVersion = "v0.5.1"
+	BotVersion = "v0.5.2"
 )
 
 func GetBotVersion() string {

@@ -14,7 +14,7 @@ import (
 )
 
 const BASE_URL = "https://api.jamaibase.com/api/v1/gen_tables"
-const MODEL_NAME = "ellm/Qwen/Qwen2-72B-Instruct"
+const MODEL_NAME = "ellm/Qwen/Qwen2.5-72B-w8a8"
 
 // Shared configuration struct for generating responses
 var GEN_CONFIG = models.GenConfig{
