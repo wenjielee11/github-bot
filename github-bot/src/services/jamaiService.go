@@ -22,7 +22,7 @@ var GEN_CONFIG = models.GenConfig{
 	Model:          MODEL_NAME,
 	Temperature:    0.01,
 	MaxTokens:      2000,
-	TopP:           0.01,
+	TopP:           0.001,
 	RagParams: &models.RagParams{
 		K:              5,
 		RerankingModel: "ellm/BAAI/bge-reranker-v2-m3",
